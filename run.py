@@ -228,9 +228,9 @@ class Authors(UniqueIDMixin, GoogleSheet):
         records = self.get_all_records()
         return [
             Author(
-                record[atrubites_col["id"]],
-                record[atrubites_col["full_name"]],
-                record[atrubites_col["birth_year"]],
+                record[self.atrubites_col["id"]],
+                record[self.atrubites_col["full_name"]],
+                record[self.atrubites_col["birth_year"]],
             )
             for record in records
         ]
@@ -315,6 +315,10 @@ class Menu:
 
     def get_all_authors(self):
         """Displays all authors."""
+        authors = self.authors_manager.get_all_authors()
+        for author in authors:
+            print(f"{author.id} - {author.full_name} - {author.birth_year}")
+
 
     def add_new_author(self):
         """Adds a new author."""
