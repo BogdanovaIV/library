@@ -1,5 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
+import uuid
 
 
 class GoogleSheetsClient:
@@ -120,8 +121,17 @@ class GoogleSheet:
 
         Args:
             values (list): A list of values to append as a new row.
+
+        Returns:
+            bool: True if the row was appended successfully, False otherwise.
         """
-        self.sheet.append_row(values)
+        try:
+            self.sheet.append_row(values)
+            print("Row appended successfully.")
+            return True
+        except gspread.exceptions.APIError as e:
+            print(f"Failed to append row: {e}")
+            return False
 
     def find_in_column(self, col, value):
         """
@@ -136,6 +146,25 @@ class GoogleSheet:
         """
         cell = self.sheet.find(value, in_column=col)
         return cell
+
+
+class UniqueIDMixin:
+    """
+    A mixin class that generates unique IDs.
+
+    Methods:
+        generate_unique_id: Generates a new unique ID.
+    """
+
+    @staticmethod
+    def generate_unique_id():
+        """
+        Generates a new unique ID.
+
+        Returns:
+            str: A unique ID string.
+        """
+        return str(uuid.uuid4())
 
 
 class Author:
@@ -163,7 +192,7 @@ class Author:
 
     def to_list(self):
         """
-        Converts the author details to a list.
+        Converts the author's details to a list.
 
         Returns:
             list: A list containing the author's details.
@@ -171,7 +200,7 @@ class Author:
         return [self.id, self.full_name, self.birth_year]
 
 
-class Authors(GoogleSheet):
+class Authors(UniqueIDMixin, GoogleSheet):
     """
     Manages a collection of authors in a Google Sheets document.
 
@@ -185,7 +214,8 @@ class Authors(GoogleSheet):
         Args:
             sheet (gspread.models.Worksheet): The worksheet object.
         """
-        self.atrubites_col = {"id": 1, "full_name": 2, "birth_year": 3}
+        #Use the dictionary to have the feature to quickly change column's position
+        self.atrubites_col = {"id": "ID", "full_name": "FULL NAME", "birth_year": "BIRTH YEAR"}
         super().__init__(sheet)
 
     def get_all_authors(self):
@@ -204,6 +234,22 @@ class Authors(GoogleSheet):
             )
             for record in records
         ]
+
+    def check_duplicate_data(self, full_name, birth_year):
+        """
+        Checks the database for duplicate data by full name and birth year.
+
+        Returns:
+            ID if it is or None if it is not.
+        """
+        records = self.get_all_records()
+        for record in records:
+            if (
+                record[self.atrubites_col["full_name"]] == full_name
+                and record[self.atrubites_col["birth_year"]] == birth_year
+            ):
+                return record[self.atrubites_col["id"]]
+        return None
 
 
 class Menu:
@@ -244,7 +290,7 @@ class Menu:
                 print("Invalid choice. Please enter a valid option.")
 
     def display_authors_menu(self):
-        """Displays the authors menu and handles user input."""
+        """Displays the 'authors' menu and handles user input."""
         while True:
             print("\nAuthors Menu:")
             print("1. Get all authors")
@@ -272,6 +318,50 @@ class Menu:
 
     def add_new_author(self):
         """Adds a new author."""
+        while True:
+
+            full_name = input(
+                "Enter the full name or 'Exit' to back to the previous step: "
+            )
+            if full_name.lower() == "exit":
+                break
+            
+            birth_year = None
+            while True:
+                try:
+                    birth_year = input(
+                    "Enter the birth year or 'Exit' to back to the previous step: "
+                    )
+                    if birth_year.lower() != "exit":
+                        birth_year = int(birth_year)
+                    
+                    break
+                
+                except ValueError as e:
+                    print(f"Invalid data: {e}, please try again.\n")
+                
+                
+            if type(birth_year) == str and birth_year.lower() == "exit":
+                break
+                        
+            id = self.authors_manager.check_duplicate_data(full_name, birth_year)
+            if id:
+                print(
+                    f"The database contains the author {full_name} - {birth_year}. ID is {id}"
+                )
+            else:
+                new_author = Author(
+                    self.authors_manager.generate_unique_id(), full_name, birth_year
+                )
+                if self.authors_manager.append_row(new_author.to_list()):
+                    print(
+                        f"Author {new_author.id} - {new_author.full_name} - {new_author.birth_year} added successfully."
+                    )
+                    break
+                else:
+                    print(
+                        f"Failed to add author {new_author.id} - {new_author.full_name} - {new_author.birth_year}."
+                    )
 
     def edit_author(self):
         """Edits an author."""
@@ -293,7 +383,7 @@ def main():
     authors_manager = Authors(client.open_worksheet(sheet_name, "authors"))
 
     # Create a Menu instance
-    print("Welcome to Library Data Automation3")
+    print("Welcome to Library Data Automation")
     menu = Menu(authors_manager)
 
     # Display the main menu
