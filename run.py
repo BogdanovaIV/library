@@ -208,6 +208,35 @@ class UniqueIDMixin:
         """
         return str(uuid.uuid4())
 
+class InputMixin:
+    """
+    A mixin class that call input which checks the value.
+
+    Methods:
+        input_int: Input the value which is an integer.
+    """
+    @staticmethod
+    def input_int(text_message):
+        """
+        Input the value which is an integer.
+
+        Args:
+            text_message (str): The message is sent to the user.
+        """
+        value = None
+        while True:
+            try:
+                value = input(text_message)
+                
+                if value.lower() != "exit":
+                    value = int(value)
+                break
+
+            except ValueError as e:
+                print(f"Invalid data: {e}, please try again.\n")
+        
+        return value
+
 
 class Author:
     """
@@ -349,7 +378,7 @@ class Authors(UniqueIDMixin, GoogleSheet):
         return self.update_row(row, author.to_list())
 
 
-class Menu:
+class Menu(InputMixin):
     """
     A class representing a menu-driven interface.
 
@@ -425,21 +454,9 @@ class Menu:
             )
             if full_name.lower() == "exit":
                 break
-
-            birth_year = None
-            while True:
-                try:
-                    birth_year = input(
-                        "Enter the birth year or 'Exit' to back to the previous step: "
-                    )
-                    if birth_year.lower() != "exit":
-                        birth_year = int(birth_year)
-
-                    break
-
-                except ValueError as e:
-                    print(f"Invalid data: {e}, please try again.\n")
-
+            text_message = "Enter the birth year or 'Exit' to back to the previous step: "
+            birth_year = self.input_int(text_message)
+           
             if type(birth_year) == str and birth_year.lower() == "exit":
                 break
 
@@ -473,26 +490,16 @@ class Menu:
                 break
 
             [author, row] = self.authors_manager.find_author(value)
-            text_mesage = f'Enter the new full name. The full name is {author.full_name} or "Exit" to back to the previous step: '
-            author.full_name = input(text_mesage)
+            
+            text_message = f'Enter the new full name. The full name is {author.full_name} or "Exit" to back to the previous step: '
+            author.full_name = self.input_int(text_message)
+            
             if author.full_name.lower() == "exit":
                 break
 
-            birth_year = None
-            while True:
-                try:
-                    birth_year = input(
-                        "Enter the birth year or 'Exit' to back to the previous step: "
-                    )
-                    if birth_year.lower() != "exit":
-                        birth_year = int(birth_year)
-
-                    break
-
-                except ValueError as e:
-                    print(f"Invalid data: {e}, please try again.\n")
-                    
-            
+            text_message = "Enter the birth year or 'Exit' to back to the previous step: "
+            birth_year = self.input_int(text_message)
+                        
             if type(birth_year) == str and birth_year.lower() == "exit":
                 break
             
