@@ -112,8 +112,38 @@ class GoogleSheet:
             row (int): The row number of the cell.
             col (int): The column number of the cell.
             value (str): The value to set in the cell.
+            
+        Returns:
+            bool: True if the cell was updated successfully, False otherwise.            
         """
-        self.sheet.update_cell(row, col, value)
+        try:
+            self.sheet.update_cell(row, col, value)
+            print("Cell updated successfully.")
+            return True
+        except gspread.exceptions.APIError as e:
+            print(f"Failed to update cell: {e}")
+            return False
+        
+
+    def update_row(self, row, values):
+        """
+        Updates a row in the worksheet.
+
+        Args:
+            row (int): The row number of the cell.
+            values (list): The list of values to set in the cells.
+            
+        Returns:
+            bool: True if the row was updated successfully, False otherwise.            
+        """
+        i = 0
+        while i < len(values):
+            result = self.update_cell(row, i + 1, values[i])
+            if not result:
+               return False 
+            i += 1
+           
+        return True
 
     def append_row(self, values):
         """
@@ -146,6 +176,18 @@ class GoogleSheet:
         """
         cell = self.sheet.find(value, in_column=col)
         return cell
+
+    def find_all_cells(self, value):
+        """
+        Finds all cells that match a specific value in the worksheet.
+
+        Args:
+            value (str): The value to search for.
+
+        Returns:
+            list: A list of gspread.models.Cell objects that match the value.
+        """
+        return self.sheet.findall(value)
 
 
 class UniqueIDMixin:
@@ -214,8 +256,13 @@ class Authors(UniqueIDMixin, GoogleSheet):
         Args:
             sheet (gspread.models.Worksheet): The worksheet object.
         """
-        #Use the dictionary to have the feature to quickly change column's position
-        self.atrubites_col = {"id": "ID", "full_name": "FULL NAME", "birth_year": "BIRTH YEAR"}
+        # Use the dictionary to have the feature to quickly change column's position
+        self.atrubites_name = {
+            "id": "ID",
+            "full_name": "FULL NAME",
+            "birth_year": "BIRTH YEAR",
+        }
+        self.atrubites_col = {"id": 1, "full_name": 2, "birth_year": 3}
         super().__init__(sheet)
 
     def get_all_authors(self):
@@ -228,9 +275,9 @@ class Authors(UniqueIDMixin, GoogleSheet):
         records = self.get_all_records()
         return [
             Author(
-                record[self.atrubites_col["id"]],
-                record[self.atrubites_col["full_name"]],
-                record[self.atrubites_col["birth_year"]],
+                record[self.atrubites_name["id"]],
+                record[self.atrubites_name["full_name"]],
+                record[self.atrubites_name["birth_year"]],
             )
             for record in records
         ]
@@ -245,11 +292,61 @@ class Authors(UniqueIDMixin, GoogleSheet):
         records = self.get_all_records()
         for record in records:
             if (
-                record[self.atrubites_col["full_name"]] == full_name
-                and record[self.atrubites_col["birth_year"]] == birth_year
+                record[self.atrubites_name["full_name"]] == full_name
+                and record[self.atrubites_name["birth_year"]] == birth_year
             ):
-                return record[self.atrubites_col["id"]]
+                return record[self.atrubites_name["id"]]
         return None
+
+    def find_author(self, value):
+        """
+        Find the author by full name or ID.
+
+        Returns:
+            Author objects and int(row of author found) or None and None.
+        """
+        cells = self.find_all_cells(value)
+        index = 0
+        if len(cells) != 1:
+            while True:
+                print("Choose the author:")
+                i = 0
+                while i < len(cells):
+                    values_row = self.get_row(cells[i].row)
+                    print(
+                        f'{i}. {values_row[self.atrubites_col["id"]-1]} - {values_row[self.atrubites_col["full_name"] - 1]} - {values_row[self.atrubites_col["birth_year"] - 1]}'
+                    )
+                    i += 1
+                choice = int(input("Enter your choice: "))
+
+                if choice >= 0 and choice < len(cells):
+                    index = choice
+                    break
+                else:
+                    print("Invalid choice. Please enter a valid option.")
+
+        values_row = self.get_row(cells[index].row)
+        return [
+            Author(
+                values_row[self.atrubites_col["id"] - 1],
+                values_row[self.atrubites_col["full_name"] - 1],
+                values_row[self.atrubites_col["birth_year"] - 1],
+            ),
+            cells[index].row,
+        ]
+
+    def edit_author(self, row, author):
+        """
+        Updates the author in the worksheet.
+
+        Args:
+            row (int): The row number of the cells.
+            author (Author object): The author contains new values.
+            
+        Returns:
+            bool: True if the row was updated successfully, False otherwise.            
+        """
+        return self.update_row(row, author.to_list())
 
 
 class Menu:
@@ -319,7 +416,6 @@ class Menu:
         for author in authors:
             print(f"{author.id} - {author.full_name} - {author.birth_year}")
 
-
     def add_new_author(self):
         """Adds a new author."""
         while True:
@@ -329,25 +425,24 @@ class Menu:
             )
             if full_name.lower() == "exit":
                 break
-            
+
             birth_year = None
             while True:
                 try:
                     birth_year = input(
-                    "Enter the birth year or 'Exit' to back to the previous step: "
+                        "Enter the birth year or 'Exit' to back to the previous step: "
                     )
                     if birth_year.lower() != "exit":
                         birth_year = int(birth_year)
-                    
+
                     break
-                
+
                 except ValueError as e:
                     print(f"Invalid data: {e}, please try again.\n")
-                
-                
+
             if type(birth_year) == str and birth_year.lower() == "exit":
                 break
-                        
+
             id = self.authors_manager.check_duplicate_data(full_name, birth_year)
             if id:
                 print(
@@ -369,6 +464,48 @@ class Menu:
 
     def edit_author(self):
         """Edits an author."""
+        while True:
+
+            value = input(
+                "Enter the full name or ID or 'Exit' to back to the previous step: "
+            )
+            if value.lower() == "exit":
+                break
+
+            [author, row] = self.authors_manager.find_author(value)
+            text_mesage = f'Enter the new full name. The full name is {author.full_name} or "Exit" to back to the previous step: '
+            author.full_name = input(text_mesage)
+            if author.full_name.lower() == "exit":
+                break
+
+            birth_year = None
+            while True:
+                try:
+                    birth_year = input(
+                        "Enter the birth year or 'Exit' to back to the previous step: "
+                    )
+                    if birth_year.lower() != "exit":
+                        birth_year = int(birth_year)
+
+                    break
+
+                except ValueError as e:
+                    print(f"Invalid data: {e}, please try again.\n")
+                    
+            
+            if type(birth_year) == str and birth_year.lower() == "exit":
+                break
+            
+            author.birth_year = birth_year
+            if self.authors_manager.edit_author(row, author):
+                print(
+                    f"Author {author.id} - {author.full_name} - {author.birth_year} edited successfully."
+                )
+                break
+            else:
+                print(
+                    f"Failed to edit author {author.id} - {author.full_name} - {author.birth_year}."
+                )
 
     def find_books_by_author(self):
         """Finds books by an author."""
