@@ -1,6 +1,7 @@
 import gspread
 from google.oauth2.service_account import Credentials
 
+
 class GoogleSheetsClient:
     """
     A client class to handle authentication and connection to Google Sheets.
@@ -9,6 +10,7 @@ class GoogleSheetsClient:
         creds_file (str): Path to the credentials JSON file.
         client (gspread.Client): An authenticated gspread client.
     """
+
     def __init__(self, creds):
         """
         Initializes the GoogleSheetsClient with the given credentials.
@@ -29,12 +31,12 @@ class GoogleSheetsClient:
             google.oauth2.service_account.Credentials: The generated credentials.
         """
         return Credentials.from_service_account_file(
-            creds_file, 
+            creds_file,
             scopes=[
                 "https://www.googleapis.com/auth/spreadsheets",
                 "https://www.googleapis.com/auth/drive.file",
-                "https://www.googleapis.com/auth/drive"
-            ]
+                "https://www.googleapis.com/auth/drive",
+            ],
         )
 
     def authenticate(self, creds):
@@ -59,7 +61,9 @@ class GoogleSheetsClient:
         """
         return self.client.open(sheet_name).worksheet(worksheet)
 
+
 CREDS = GoogleSheetsClient.get_creds("creds.json")
+
 
 class GoogleSheet:
     """
@@ -68,6 +72,7 @@ class GoogleSheet:
     Attributes:
         sheet (gspread.models.Worksheet): The worksheet object.
     """
+
     def __init__(self, sheet):
         """
         Initializes the GoogleSheet class with a worksheet object.
@@ -117,7 +122,7 @@ class GoogleSheet:
             values (list): A list of values to append as a new row.
         """
         self.sheet.append_row(values)
-    
+
     def find_in_column(self, col, value):
         """
         Finds a value in a specific column of the worksheet.
@@ -131,31 +136,88 @@ class GoogleSheet:
         """
         cell = self.sheet.find(value, in_column=col)
         return cell
-    
+
+
+class Author:
+    """
+    Represents an individual author.
+
+    Attributes:
+        id (int): The author's ID.
+        full_name (str): The author's full name.
+        birth_year (int): The author's birth year.
+    """
+
+    def __init__(self, id, full_name, birth_year):
+        """
+        Initializes the Author class with the given details.
+
+        Args:
+            id (int): The author's ID.
+            full_name (str): The author's full name.
+            birth_year (int): The author's birth year.
+        """
+        self.id = id
+        self.full_name = full_name
+        self.birth_year = birth_year
+
+    def to_list(self):
+        """
+        Converts the author details to a list.
+
+        Returns:
+            list: A list containing the author's details.
+        """
+        return [self.id, self.full_name, self.birth_year]
+
+
+class Authors(GoogleSheet):
+    """
+    Manages a collection of authors in a Google Sheets document.
+
+    Inherits from GoogleSheet.
+    """
+
+    def __init__(self, sheet):
+        """
+        Initializes the Authors class.
+
+        Args:
+            sheet (gspread.models.Worksheet): The worksheet object.
+         """
+        self.atrubites_col = {"id": 1, "full_name": 2, "birth_year": 3}
+        super().__init__(sheet, attributes_col=attributes_col)
+
+    def get_all_authors(self):
+        """
+        Retrieves all authors from the worksheet.
+
+        Returns:
+            list: A list of Author objects.
+        """
+        records = self.get_all_records()
+        return [
+            Author(
+                record[atrubites_col["id"]],
+                record[atrubites_col["full_name"]],
+                record[atrubites_col["birth_year"]],
+            )
+            for record in records
+        ]
+
+
 def main():
     """
     Run all program functions
     """
-    sheet_name = 'library'
-    worksheet_name = 'authors'
+    sheet_name = "library"
     # Initialize the client and open the worksheet
     client = GoogleSheetsClient(CREDS)
-    worksheet = client.open_worksheet(sheet_name, worksheet_name)
-    # Initialize the GoogleSheet class with the worksheet object
-    google_sheet = GoogleSheet(worksheet)
-    # Get all records
-    print(google_sheet.get_all_records())
-    # Get specific row
-    print(google_sheet.get_row(2))
-    # Update a cell
-    google_sheet.update_cell(2, 2, 'New Value')
-    # Append a new row
-    google_sheet.append_row(['Value1', 'Value2', 'Value3'])
-    # Find a value in a specific column
-    cell = google_sheet.find_in_column(2, 'Value2')
-    if cell:
-        print(f"Found value at row {cell.row}, column {cell.col}")
-    else:
-        print("Value not found")
+    # Initialize the Authors manager
+    authors_manager = Authors(client.open_worksheet(sheet_name, "authors"))
+    # Fetch all authors
+    authors = authors_manager.get_all_authors()
+    
+
 
 main()
