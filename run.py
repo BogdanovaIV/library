@@ -184,9 +184,9 @@ class Authors(GoogleSheet):
 
         Args:
             sheet (gspread.models.Worksheet): The worksheet object.
-         """
+        """
         self.atrubites_col = {"id": 1, "full_name": 2, "birth_year": 3}
-        super().__init__(sheet, attributes_col=attributes_col)
+        super().__init__(sheet)
 
     def get_all_authors(self):
         """
@@ -206,18 +206,98 @@ class Authors(GoogleSheet):
         ]
 
 
+class Menu:
+    """
+    A class representing a menu-driven interface.
+
+    Attributes:
+        authors_manager (Authors): An instance of the Authors class.
+    """
+
+    def __init__(self, authors_manager):
+        """
+        Initializes the Menu class.
+
+        Args:
+            authors_manager (Authors): An instance of the Authors class.
+        """
+        self.authors_manager = authors_manager
+
+    def display_menu(self):
+        """Displays the main menu and handles user input."""
+        while True:
+            print("\nMain Menu:")
+            print("1. Authors")
+            print("2. Books")
+            print("3. Exit")
+            choice = input("Enter your choice: ")
+
+            if choice == "1":
+                self.display_authors_menu()
+            elif choice == "2":
+                print("Block under development!")
+                pass
+            elif choice == "3":
+                print("Exiting the program. Goodbye!")
+                break
+            else:
+                print("Invalid choice. Please enter a valid option.")
+
+    def display_authors_menu(self):
+        """Displays the authors menu and handles user input."""
+        while True:
+            print("\nAuthors Menu:")
+            print("1. Get all authors")
+            print("2. Add a new author")
+            print("3. Edit an author")
+            print("4. Find books by an author")
+            print("5. Back to the previous step")
+            choice = input("Enter your choice: ")
+
+            if choice == "1":
+                self.get_all_authors()
+            elif choice == "2":
+                self.add_new_author()
+            elif choice == "3":
+                self.edit_author()
+            elif choice == "4":
+                self.find_books_by_author()
+            elif choice == "5":
+                break
+            else:
+                print("Invalid choice. Please enter a valid option.")
+
+    def get_all_authors(self):
+        """Displays all authors."""
+
+    def add_new_author(self):
+        """Adds a new author."""
+
+    def edit_author(self):
+        """Edits an author."""
+
+    def find_books_by_author(self):
+        """Finds books by an author."""
+
+
 def main():
     """
     Run all program functions
     """
     sheet_name = "library"
+
     # Initialize the client and open the worksheet
     client = GoogleSheetsClient(CREDS)
+
     # Initialize the Authors manager
     authors_manager = Authors(client.open_worksheet(sheet_name, "authors"))
-    # Fetch all authors
-    authors = authors_manager.get_all_authors()
-    
+
+    # Create a Menu instance
+    print("Welcome to Library Data Automation3")
+    menu = Menu(authors_manager)
+
+    # Display the main menu
+    menu.display_menu()
 
 
 main()
