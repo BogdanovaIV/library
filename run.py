@@ -112,9 +112,9 @@ class GoogleSheet:
             row (int): The row number of the cell.
             col (int): The column number of the cell.
             value (str): The value to set in the cell.
-            
+
         Returns:
-            bool: True if the cell was updated successfully, False otherwise.            
+            bool: True if the cell was updated successfully, False otherwise.
         """
         try:
             self.sheet.update_cell(row, col, value)
@@ -123,7 +123,6 @@ class GoogleSheet:
         except gspread.exceptions.APIError as e:
             print(f"Failed to update cell: {e}")
             return False
-        
 
     def update_row(self, row, values):
         """
@@ -132,17 +131,17 @@ class GoogleSheet:
         Args:
             row (int): The row number of the cell.
             values (list): The list of values to set in the cells.
-            
+
         Returns:
-            bool: True if the row was updated successfully, False otherwise.            
+            bool: True if the row was updated successfully, False otherwise.
         """
         i = 0
         while i < len(values):
             result = self.update_cell(row, i + 1, values[i])
             if not result:
-               return False 
+                return False
             i += 1
-           
+
         return True
 
     def append_row(self, values):
@@ -208,6 +207,7 @@ class UniqueIDMixin:
         """
         return str(uuid.uuid4())
 
+
 class InputMixin:
     """
     A mixin class that call input which checks the value.
@@ -215,6 +215,7 @@ class InputMixin:
     Methods:
         input_int: Input the value which is an integer.
     """
+
     @staticmethod
     def input_int(text_message):
         """
@@ -227,14 +228,14 @@ class InputMixin:
         while True:
             try:
                 value = input(text_message)
-                
+
                 if value.lower() != "exit":
                     value = int(value)
                 break
 
             except ValueError as e:
                 print(f"Invalid data: {e}, please try again.\n")
-        
+
         return value
 
 
@@ -243,7 +244,7 @@ class Author:
     Represents an individual author.
 
     Attributes:
-        id (int): The author's ID.
+        id (str): The author's ID.
         full_name (str): The author's full name.
         birth_year (int): The author's birth year.
     """
@@ -253,7 +254,7 @@ class Author:
         Initializes the Author class with the given details.
 
         Args:
-            id (int): The author's ID.
+            id (str): The author's ID.
             full_name (str): The author's full name.
             birth_year (int): The author's birth year.
         """
@@ -310,6 +311,19 @@ class Authors(UniqueIDMixin, GoogleSheet):
             )
             for record in records
         ]
+
+    def get_all_authors_dictionary():
+        """
+        Retrieves all authors from the worksheet.
+
+        Returns:
+            dictionary: A dictionary of ID and full name.
+        """
+        records = self.get_all_records()
+        return {
+            record[self.atrubites_name["id"]]: record[self.atrubites_name["full_name"]]
+            for record in records
+        }
 
     def check_duplicate_data(self, full_name, birth_year):
         """
@@ -371,11 +385,122 @@ class Authors(UniqueIDMixin, GoogleSheet):
         Args:
             row (int): The row number of the cells.
             author (Author object): The author contains new values.
-            
+
         Returns:
-            bool: True if the row was updated successfully, False otherwise.            
+            bool: True if the row was updated successfully, False otherwise.
         """
         return self.update_row(row, author.to_list())
+
+
+class Book:
+    """
+    Represents a book.
+
+    Attributes:
+        id (str): The book's ID.
+        title (str): The book's title.
+        author_id (str): The author's ID.
+        author_full_name (str): The author's ID.
+        shelf_number (str): The number of the shelf on which the book is stored.
+    """
+
+    def __init__(self, id, title, author_id, shelf_number):
+        """
+        Initializes the Book class with the given details.
+
+        Args:
+            id (str): The book's ID.
+            title (str): The book's title.
+            author_id (str): The author's ID.
+            author_full_name (str): The author's ID.
+            shelf_number (str): The number of the shelf on which the book is stored.
+        """
+        self.id = id
+        self.title = title
+        self.author_id = author_id
+        self.author_full_name = author_full_name
+        self.shelf_number = shelf_number
+
+    def to_list(self):
+        """
+        Converts the book's details to a list.
+
+        Returns:
+            list: A list containing the book's details.
+        """
+        return [self.id, self.title, self.author_id, self.shelf_number]
+
+
+class Books(UniqueIDMixin, GoogleSheet):
+    """
+    Manages a collection of books in a Google Sheets document.
+
+    Inherits from GoogleSheet.
+    """
+
+    def __init__(self, sheet):
+        """
+        Initializes the Books class.
+
+        Args:
+            sheet (gspread.models.Worksheet): The worksheet object.
+        """
+        # Use the dictionary to have the feature to quickly change column's position
+        self.atrubites_name = {
+            "id": "ID",
+            "title": "TITLE",
+            "author_id": "AUTHOR (ID)",
+            "shelf_number": "SHELF",
+        }
+        self.atrubites_col = {"id": 1, "title": 2, "author_id": 3, "shelf_number": 4}
+        super().__init__(sheet)
+
+    def get_all_books(self):
+        """
+        Retrieves all books from the worksheet.
+
+        Returns:
+            list: A list of Book objects.
+        """
+        records = self.get_all_records()
+        return [
+            Book(
+                record[self.atrubites_name["id"]],
+                record[self.atrubites_name["title"]],
+                record[self.atrubites_name["author_id"]],
+                record[self.atrubites_name["shelf_number"]],
+            )
+            for record in records
+        ]
+
+    def check_duplicate_data(self, title, author_id):
+        """
+        Checks the database for duplicate data by title and author's ID.
+
+        Returns:
+            ID if it is or None if it is not.
+        """
+        records = self.get_all_records()
+        for record in records:
+            if (
+                record[self.atrubites_name["title"]] == full_name
+                and record[self.atrubites_name["author_id"]] == birth_year
+            ):
+                return record[self.atrubites_name["id"]]
+        return None
+
+    def edit_book(self, row, book):
+        """
+        Updates the book in the worksheet.
+
+        Args:
+            row (int): The row number of the cells.
+            author (Book object): The author contains new values.
+
+        Returns:
+            bool: True if the row was updated successfully, False otherwise.
+        """
+        return self.update_row(row, book.to_list())
 
 
 class Menu(InputMixin):
@@ -386,14 +511,16 @@ class Menu(InputMixin):
         authors_manager (Authors): An instance of the Authors class.
     """
 
-    def __init__(self, authors_manager):
+    def __init__(self, authors_manager, books_manager):
         """
         Initializes the Menu class.
 
         Args:
             authors_manager (Authors): An instance of the Authors class.
+            books_manager (Books): An instance of the Books class.
         """
         self.authors_manager = authors_manager
+        self.books_manager = books_manager
 
     def display_menu(self):
         """Displays the main menu and handles user input."""
@@ -407,14 +534,14 @@ class Menu(InputMixin):
             if choice == "1":
                 self.display_authors_menu()
             elif choice == "2":
-                print("Block under development!")
-                pass
+                self.display_books_menu()
             elif choice == "3":
                 print("Exiting the program. Goodbye!")
                 break
             else:
                 print("Invalid choice. Please enter a valid option.")
 
+    # Authors menu
     def display_authors_menu(self):
         """Displays the 'authors' menu and handles user input."""
         while True:
@@ -454,9 +581,11 @@ class Menu(InputMixin):
             )
             if full_name.lower() == "exit":
                 break
-            text_message = "Enter the birth year or 'Exit' to back to the previous step: "
+            text_message = (
+                "Enter the birth year or 'Exit' to back to the previous step: "
+            )
             birth_year = self.input_int(text_message)
-           
+
             if type(birth_year) == str and birth_year.lower() == "exit":
                 break
 
@@ -490,19 +619,21 @@ class Menu(InputMixin):
                 break
 
             [author, row] = self.authors_manager.find_author(value)
-            
+
             text_message = f'Enter the new full name. The full name is {author.full_name} or "Exit" to back to the previous step: '
             author.full_name = self.input_int(text_message)
-            
+
             if author.full_name.lower() == "exit":
                 break
 
-            text_message = "Enter the birth year or 'Exit' to back to the previous step: "
+            text_message = (
+                "Enter the birth year or 'Exit' to back to the previous step: "
+            )
             birth_year = self.input_int(text_message)
-                        
+
             if type(birth_year) == str and birth_year.lower() == "exit":
                 break
-            
+
             author.birth_year = birth_year
             if self.authors_manager.edit_author(row, author):
                 print(
@@ -516,6 +647,45 @@ class Menu(InputMixin):
 
     def find_books_by_author(self):
         """Finds books by an author."""
+
+    # Books menu
+    def display_books_menu(self):
+        """Displays the books menu and handles user input."""
+        while True:
+            print("\nBooks Menu:")
+            print("1. Get all books")
+            print("2. Add a new book")
+            print("3. Edit a book")
+            print("4. Find books by part of the title")
+            print("5. Back to the previous step")
+            choice = input("Enter your choice: ")
+
+            if choice == "1":
+                self.get_all_books()
+            elif choice == "2":
+                self.add_new_book()
+            elif choice == "3":
+                self.edit_book()
+            elif choice == "4":
+                self.find_books_by_title()
+            elif choice == "5":
+                break
+            else:
+                print("Invalid choice. Please enter a valid option.")
+
+    def get_all_books(self):
+        """Displays all books."""
+        books = self.books_manager.get_all_books()
+        authors = self.authors_manager.get_all_authors_dictionary()
+        for book in books:
+            try:
+                author_name = authors[books.author_id]
+            except KeyError as e:
+                author_name = "Invalid author's ID"
+            finally:
+                print(
+                    f"{book.id} - {book.title} - {authors[books.author_id]} - {book.shelf}"
+                )
 
 
 def main():
