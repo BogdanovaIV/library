@@ -312,7 +312,7 @@ class Authors(UniqueIDMixin, GoogleSheet):
             for record in records
         ]
 
-    def get_all_authors_dictionary():
+    def get_all_authors_dictionary(self):
         """
         Retrieves all authors from the worksheet.
 
@@ -349,6 +349,11 @@ class Authors(UniqueIDMixin, GoogleSheet):
             Author objects and int(row of author found) or None and None.
         """
         cells = self.find_all_cells(value)
+        
+        if not cells:
+            print(f'The author with {value} is not found.')
+            return ['continue', -1]
+        
         index = 0
         if len(cells) != 1:
             while True:
@@ -412,13 +417,11 @@ class Book:
             id (str): The book's ID.
             title (str): The book's title.
             author_id (str): The author's ID.
-            author_full_name (str): The author's ID.
             shelf_number (str): The number of the shelf on which the book is stored.
         """
         self.id = id
         self.title = title
         self.author_id = author_id
-        self.author_full_name = author_full_name
         self.shelf_number = shelf_number
 
     def to_list(self):
@@ -483,8 +486,8 @@ class Books(UniqueIDMixin, GoogleSheet):
         records = self.get_all_records()
         for record in records:
             if (
-                record[self.atrubites_name["title"]] == full_name
-                and record[self.atrubites_name["author_id"]] == birth_year
+                record[self.atrubites_name["title"]] == title
+                and record[self.atrubites_name["author_id"]] == author_id
             ):
                 return record[self.atrubites_name["id"]]
         return None
@@ -620,6 +623,9 @@ class Menu(InputMixin):
 
             [author, row] = self.authors_manager.find_author(value)
 
+            if type(author) == str and author.lower() == 'continue':
+                continue
+
             text_message = f'Enter the new full name. The full name is {author.full_name} or "Exit" to back to the previous step: '
             author.full_name = self.input_int(text_message)
 
@@ -637,12 +643,12 @@ class Menu(InputMixin):
             author.birth_year = birth_year
             if self.authors_manager.edit_author(row, author):
                 print(
-                    f"Author {author.id} - {author.full_name} - {author.birth_year} edited successfully."
+                    f"The author {author.id} - {author.full_name} - {author.birth_year} edited successfully."
                 )
                 break
             else:
                 print(
-                    f"Failed to edit author {author.id} - {author.full_name} - {author.birth_year}."
+                    f"Failed to edit the author {author.id} - {author.full_name} - {author.birth_year}."
                 )
 
     def find_books_by_author(self):
@@ -679,13 +685,64 @@ class Menu(InputMixin):
         authors = self.authors_manager.get_all_authors_dictionary()
         for book in books:
             try:
-                author_name = authors[books.author_id]
+                author_name = authors[book.author_id]
             except KeyError as e:
                 author_name = "Invalid author's ID"
             finally:
                 print(
-                    f"{book.id} - {book.title} - {authors[books.author_id]} - {book.shelf}"
+                    f"{book.id} - {book.title} - {author_name} - shelf ({book.shelf_number})"
                 )
+    
+    def add_new_book(self):
+        """Adds a new book."""
+        while True:
+
+            value = input(
+                "Enter the full name or ID of the author or 'Exit' to back to the previous step: "
+            )
+            if value.lower() == "exit":
+                break
+
+            [author, row] = self.authors_manager.find_author(value)
+            
+            if type(author) == str and author.lower() == 'continue':
+                continue
+            
+            title = input(
+                "Enter the title or 'Exit' to back to the previous step: "
+            )
+            if title.lower() == "exit":
+                break
+
+            id = self.books_manager.check_duplicate_data( title, author.id)
+            if id:
+                print(
+                    f"The database contains the book {title} - {author.full_name}. ID is {id}"
+                )
+                
+                continue
+                            
+            text_message = (
+                "Enter the number of the shelf on which the book is stored or 'Exit' to back to the previous step: "
+            )
+            shelf_number = self.input_int(text_message)
+
+            if type(shelf_number) == str and shelf_number.lower() == "exit":
+                break
+            
+            new_book = Book(
+                    self.books_manager.generate_unique_id(), title, author.id, shelf_number)
+                
+            if self.books_manager.append_row(new_book.to_list()):
+                print(
+                    f"The book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number}) added successfully."
+                )
+                break
+            else:
+                print(
+                    f"Failed to add the book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number})."
+                )
+
 
 
 def main():
@@ -700,9 +757,12 @@ def main():
     # Initialize the Authors manager
     authors_manager = Authors(client.open_worksheet(sheet_name, "authors"))
 
+    # Initialize the Books manager
+    books_manager = Books(client.open_worksheet(sheet_name, "books"))
+    
     # Create a Menu instance
     print("Welcome to Library Data Automation")
-    menu = Menu(authors_manager)
+    menu = Menu(authors_manager, books_manager)
 
     # Display the main menu
     menu.display_menu()
