@@ -188,6 +188,27 @@ class GoogleSheet:
         """
         return self.sheet.findall(value)
 
+    def check_duplicate_data(self, attributes):
+        """
+        Checks the database for duplicate data by two columns.
+
+        Args:
+            attributes (dictionary): The dictionary where the key is attributes, the value is the value being tested.
+
+        Returns:
+            Dictionary with values if it is or None if it is not.
+        """
+        records = self.get_all_records()
+        for record in records:
+            result = True
+            for [atrubite, value] in attributes.items():
+                if record[atrubite] != value:
+                    result = False
+                    break
+            if result:
+                return record
+        return None
+
 
 class UniqueIDMixin:
     """
@@ -325,22 +346,6 @@ class Authors(UniqueIDMixin, GoogleSheet):
             for record in records
         }
 
-    def check_duplicate_data(self, full_name, birth_year):
-        """
-        Checks the database for duplicate data by full name and birth year.
-
-        Returns:
-            ID if it is or None if it is not.
-        """
-        records = self.get_all_records()
-        for record in records:
-            if (
-                record[self.atrubites_name["full_name"]] == full_name
-                and record[self.atrubites_name["birth_year"]] == birth_year
-            ):
-                return record[self.atrubites_name["id"]]
-        return None
-
     def find_author(self, value):
         """
         Find the author by full name or ID.
@@ -349,11 +354,11 @@ class Authors(UniqueIDMixin, GoogleSheet):
             Author objects and int(row of author found) or None and None.
         """
         cells = self.find_all_cells(value)
-        
+
         if not cells:
-            print(f'The author with {value} is not found.')
-            return ['continue', -1]
-        
+            print(f"The author with {value} is not found.")
+            return ["continue", -1]
+
         index = 0
         if len(cells) != 1:
             while True:
@@ -405,7 +410,6 @@ class Book:
         id (str): The book's ID.
         title (str): The book's title.
         author_id (str): The author's ID.
-        author_full_name (str): The author's ID.
         shelf_number (str): The number of the shelf on which the book is stored.
     """
 
@@ -476,22 +480,6 @@ class Books(UniqueIDMixin, GoogleSheet):
             for record in records
         ]
 
-    def check_duplicate_data(self, title, author_id):
-        """
-        Checks the database for duplicate data by title and author's ID.
-
-        Returns:
-            ID if it is or None if it is not.
-        """
-        records = self.get_all_records()
-        for record in records:
-            if (
-                record[self.atrubites_name["title"]] == title
-                and record[self.atrubites_name["author_id"]] == author_id
-            ):
-                return record[self.atrubites_name["id"]]
-        return None
-
     def edit_book(self, row, book):
         """
         Updates the book in the worksheet.
@@ -504,6 +492,37 @@ class Books(UniqueIDMixin, GoogleSheet):
             bool: True if the row was updated successfully, False otherwise.
         """
         return self.update_row(row, book.to_list())
+
+    def find_book(self, value, author_id):
+        """
+        Checks the database for duplicate data by two columns.
+
+        Args:
+            value (str): The book's title or ID.
+            author_id (str): The author's ID.
+
+        Returns:
+            Book object with values and row if it is or None, -1 if it is not.
+        """
+        row = 1
+        records = self.get_all_records()
+        for record in records:
+            row += 1
+            if (record[self.atrubites_name["author_id"]] == author_id) and (
+                record[self.atrubites_name["id"]] == value
+                or record[self.atrubites_name["title"]] == value
+            ):
+                return [
+                    Book(
+                        record[self.atrubites_name["id"]],
+                        record[self.atrubites_name["title"]],
+                        record[self.atrubites_name["author_id"]],
+                        record[self.atrubites_name["shelf_number"]],
+                    ),
+                    row,
+                ]
+
+        return [None, -1]
 
 
 class Menu(InputMixin):
@@ -592,10 +611,15 @@ class Menu(InputMixin):
             if type(birth_year) == str and birth_year.lower() == "exit":
                 break
 
-            id = self.authors_manager.check_duplicate_data(full_name, birth_year)
-            if id:
+            record = self.authors_manager.check_duplicate_data(
+                {
+                    self.authors_manager.atrubites_name["full_name"]: full_name,
+                    elf.authors_manager.atrubites_name["birth_year"]: birth_year,
+                }
+            )
+            if record:
                 print(
-                    f"The database contains the author {full_name} - {birth_year}. ID is {id}"
+                    f"The database contains the author {full_name} - {birth_year}. ID is {record['id']}"
                 )
             else:
                 new_author = Author(
@@ -623,7 +647,7 @@ class Menu(InputMixin):
 
             [author, row] = self.authors_manager.find_author(value)
 
-            if type(author) == str and author.lower() == 'continue':
+            if type(author) == str and author.lower() == "continue":
                 continue
 
             text_message = f'Enter the new full name. The full name is {author.full_name} or "Exit" to back to the previous step: '
@@ -692,7 +716,7 @@ class Menu(InputMixin):
                 print(
                     f"{book.id} - {book.title} - {author_name} - shelf ({book.shelf_number})"
                 )
-    
+
     def add_new_book(self):
         """Adds a new book."""
         while True:
@@ -704,35 +728,37 @@ class Menu(InputMixin):
                 break
 
             [author, row] = self.authors_manager.find_author(value)
-            
-            if type(author) == str and author.lower() == 'continue':
+
+            if type(author) == str and author.lower() == "continue":
                 continue
-            
-            title = input(
-                "Enter the title or 'Exit' to back to the previous step: "
-            )
+
+            title = input("Enter the title or 'Exit' to back to the previous step: ")
             if title.lower() == "exit":
                 break
 
-            id = self.books_manager.check_duplicate_data( title, author.id)
-            if id:
-                print(
-                    f"The database contains the book {title} - {author.full_name}. ID is {id}"
-                )
-                
-                continue
-                            
-            text_message = (
-                "Enter the number of the shelf on which the book is stored or 'Exit' to back to the previous step: "
+            record = self.books_manager.check_duplicate_data(
+                {
+                    self.books_manager.atrubites_name["title"]: title,
+                    self.books_manager.atrubites_name["author_id"]: author.id,
+                }
             )
+            if record:
+                print(
+                    f"The database contains the book {title} - {author.full_name}. ID is {record.id}"
+                )
+
+                continue
+
+            text_message = "Enter the number of the shelf on which the book is stored or 'Exit' to back to the previous step: "
             shelf_number = self.input_int(text_message)
 
             if type(shelf_number) == str and shelf_number.lower() == "exit":
                 break
-            
+
             new_book = Book(
-                    self.books_manager.generate_unique_id(), title, author.id, shelf_number)
-                
+                self.books_manager.generate_unique_id(), title, author.id, shelf_number
+            )
+
             if self.books_manager.append_row(new_book.to_list()):
                 print(
                     f"The book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number}) added successfully."
@@ -743,6 +769,65 @@ class Menu(InputMixin):
                     f"Failed to add the book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number})."
                 )
 
+    def edit_book(self):
+        """Edits a book."""
+        while True:
+
+            value = input(
+                "Enter the full name or ID of the author or 'Exit' to back to the previous step: "
+            )
+            if value.lower() == "exit":
+                break
+
+            [author, row_author] = self.authors_manager.find_author(value)
+
+            if type(author) == str and author.lower() == "continue":
+                continue
+
+            book = None
+            row = None
+            while True:
+                value = input(
+                    "Enter the title or ID or 'Exit' to back to the previous step: "
+                )
+                if value.lower() == "exit":
+                    book = "exit"
+                    break
+
+                [book, row] = self.books_manager.find_book(value, author.id)
+
+                if book:
+                    break
+                print(f"The book {value} - {author.full_name} is not found")
+
+            if type(book) == str and book.lower() == "exit":
+                break
+
+            new_title = input(
+                "Enter the new title or empty string not to change the title or 'Exit' to back to the previous step: "
+            )
+            if new_title.lower() == "exit":
+                break
+
+            if new_title:
+                book.title = new_title
+
+            text_message = "Enter the number of the shelf on which the book is stored or 'Exit' to back to the previous step: "
+            shelf_number = self.input_int(text_message)
+
+            if type(shelf_number) == str and shelf_number.lower() == "exit":
+                break
+
+            book.shelf_number = shelf_number
+            if self.books_manager.update_row(row, book.to_list()):
+                print(
+                    f"The book {book.id} - {book.title} - {author.full_name} - shelf ({book.shelf_number}) edited successfully."
+                )
+                break
+            else:
+                print(
+                    f"Failed to edit the book {book.id} - {book.title} - {author.full_name} - shelf ({book.shelf_number})."
+                )
 
 
 def main():
@@ -759,7 +844,7 @@ def main():
 
     # Initialize the Books manager
     books_manager = Books(client.open_worksheet(sheet_name, "books"))
-    
+
     # Create a Menu instance
     print("Welcome to Library Data Automation")
     menu = Menu(authors_manager, books_manager)
