@@ -308,12 +308,12 @@ class Authors(UniqueIDMixin, GoogleSheet):
             sheet (gspread.models.Worksheet): The worksheet object.
         """
         # Use the dictionary to have the feature to quickly change column's position
-        self.atrubites_name = {
+        self.attributes_name = {
             "id": "ID",
             "full_name": "FULL NAME",
             "birth_year": "BIRTH YEAR",
         }
-        self.atrubites_col = {"id": 1, "full_name": 2, "birth_year": 3}
+        self.attributes_col = {"id": 1, "full_name": 2, "birth_year": 3}
         super().__init__(sheet)
 
     def get_all_authors(self):
@@ -326,9 +326,9 @@ class Authors(UniqueIDMixin, GoogleSheet):
         records = self.get_all_records()
         return [
             Author(
-                record[self.atrubites_name["id"]],
-                record[self.atrubites_name["full_name"]],
-                record[self.atrubites_name["birth_year"]],
+                record[self.attributes_name["id"]],
+                record[self.attributes_name["full_name"]],
+                record[self.attributes_name["birth_year"]],
             )
             for record in records
         ]
@@ -342,7 +342,7 @@ class Authors(UniqueIDMixin, GoogleSheet):
         """
         records = self.get_all_records()
         return {
-            record[self.atrubites_name["id"]]: record[self.atrubites_name["full_name"]]
+            record[self.attributes_name["id"]]: record[self.attributes_name["full_name"]]
             for record in records
         }
 
@@ -367,7 +367,7 @@ class Authors(UniqueIDMixin, GoogleSheet):
                 while i < len(cells):
                     values_row = self.get_row(cells[i].row)
                     print(
-                        f'{i}. {values_row[self.atrubites_col["id"]-1]} - {values_row[self.atrubites_col["full_name"] - 1]} - {values_row[self.atrubites_col["birth_year"] - 1]}'
+                        f'{i}. {values_row[self.attributes_col["id"]-1]} - {values_row[self.attributes_col["full_name"] - 1]} - {values_row[self.attributes_col["birth_year"] - 1]}'
                     )
                     i += 1
                 choice = int(input("Enter your choice: "))
@@ -381,9 +381,9 @@ class Authors(UniqueIDMixin, GoogleSheet):
         values_row = self.get_row(cells[index].row)
         return [
             Author(
-                values_row[self.atrubites_col["id"] - 1],
-                values_row[self.atrubites_col["full_name"] - 1],
-                values_row[self.atrubites_col["birth_year"] - 1],
+                values_row[self.attributes_col["id"] - 1],
+                values_row[self.attributes_col["full_name"] - 1],
+                values_row[self.attributes_col["birth_year"] - 1],
             ),
             cells[index].row,
         ]
@@ -453,13 +453,13 @@ class Books(UniqueIDMixin, GoogleSheet):
             sheet (gspread.models.Worksheet): The worksheet object.
         """
         # Use the dictionary to have the feature to quickly change column's position
-        self.atrubites_name = {
+        self.attributes_name = {
             "id": "ID",
             "title": "TITLE",
             "author_id": "AUTHOR (ID)",
             "shelf_number": "SHELF",
         }
-        self.atrubites_col = {"id": 1, "title": 2, "author_id": 3, "shelf_number": 4}
+        self.attributes_col = {"id": 1, "title": 2, "author_id": 3, "shelf_number": 4}
         super().__init__(sheet)
 
     def get_all_books(self):
@@ -472,10 +472,10 @@ class Books(UniqueIDMixin, GoogleSheet):
         records = self.get_all_records()
         return [
             Book(
-                record[self.atrubites_name["id"]],
-                record[self.atrubites_name["title"]],
-                record[self.atrubites_name["author_id"]],
-                record[self.atrubites_name["shelf_number"]],
+                record[self.attributes_name["id"]],
+                record[self.attributes_name["title"]],
+                record[self.attributes_name["author_id"]],
+                record[self.attributes_name["shelf_number"]],
             )
             for record in records
         ]
@@ -508,16 +508,16 @@ class Books(UniqueIDMixin, GoogleSheet):
         records = self.get_all_records()
         for record in records:
             row += 1
-            if (record[self.atrubites_name["author_id"]] == author_id) and (
-                record[self.atrubites_name["id"]] == value
-                or record[self.atrubites_name["title"]] == value
+            if (record[self.attributes_name["author_id"]] == author_id) and (
+                record[self.attributes_name["id"]] == value
+                or record[self.attributes_name["title"]] == value
             ):
                 return [
                     Book(
-                        record[self.atrubites_name["id"]],
-                        record[self.atrubites_name["title"]],
-                        record[self.atrubites_name["author_id"]],
-                        record[self.atrubites_name["shelf_number"]],
+                        record[self.attributes_name["id"]],
+                        record[self.attributes_name["title"]],
+                        record[self.attributes_name["author_id"]],
+                        record[self.attributes_name["shelf_number"]],
                     ),
                     row,
                 ]
@@ -613,8 +613,8 @@ class Menu(InputMixin):
 
             record = self.authors_manager.check_duplicate_data(
                 {
-                    self.authors_manager.atrubites_name["full_name"]: full_name,
-                    elf.authors_manager.atrubites_name["birth_year"]: birth_year,
+                    self.authors_manager.attributes_name["full_name"]: full_name,
+                    elf.authors_manager.attributes_name["birth_year"]: birth_year,
                 }
             )
             if record:
@@ -738,8 +738,8 @@ class Menu(InputMixin):
 
             record = self.books_manager.check_duplicate_data(
                 {
-                    self.books_manager.atrubites_name["title"]: title,
-                    self.books_manager.atrubites_name["author_id"]: author.id,
+                    self.books_manager.attributes_name["title"]: title,
+                    self.books_manager.attributes_name["author_id"]: author.id,
                 }
             )
             if record:
