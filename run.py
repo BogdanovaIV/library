@@ -243,19 +243,50 @@ class InputMixin:
             text_message (str): The message is sent to the user.
 
         Returns:
-            integer or str = "exit": The value inputted by the user.
+            integer or None: The value inputted by the user.
         """
         value = None
         while True:
             try:
                 value = input(text_message)
 
-                if value.lower() != "exit":
+                if value.lower() == "exit":
+                    value = None
+                else:
                     value = int(value)
+                    
+            except ValueError as e:
+                print(f"Invalid data: {e}, please try again.\n")
+            else:
                 break
+
+        return value
+
+    @staticmethod
+    def input_str(text_message, empty_str_avaliable=False):
+        """
+        Input the value which is a string.
+
+        Args:
+            text_message (str): The message is sent to the user.
+
+        Returns:
+            string or None: The value inputted by the user.
+        """
+        value = None
+        while True:
+            try:
+                value = input(text_message)
+
+                if not empty_str_avaliable and not value:
+                    raise ValueError("Value cannot be empty")
+                elif value.lower() == "exit":
+                    value = None
 
             except ValueError as e:
                 print(f"Invalid data: {e}, please try again.\n")
+            else:
+                break
 
         return value
 
@@ -622,65 +653,69 @@ class Menu(InputMixin):
     def add_new_author(self):
         """Adds a new author."""
         while True:
-
-            full_name = input(
+            # Input the full name
+            full_name = self.input_str(
                 "Enter the full name or 'Exit' to back to the previous step: "
             )
-            if full_name.lower() == "exit":
+            if full_name == None:
                 break
-            text_message = (
+            # Input the birth year
+            birth_year = self.input_int(
                 "Enter the birth year or 'Exit' to back to the previous step: "
             )
-            birth_year = self.input_int(text_message)
-
-            if type(birth_year) == str and birth_year.lower() == "exit":
+            if birth_year == None:
                 break
-
+            # check on duplicates
             record = self.authors_manager.check_duplicate_data(
                 {
                     self.authors_manager.attributes_name["full_name"]: full_name,
-                    elf.authors_manager.attributes_name["birth_year"]: birth_year,
+                    self.authors_manager.attributes_name["birth_year"]: birth_year,
                 }
             )
             if record:
                 print(
                     f"The database contains the author {full_name} - {birth_year}. ID is {record['id']}"
                 )
-            else:
-                new_author = Author(
-                    self.authors_manager.generate_unique_id(), full_name, birth_year
+                continue
+            # Add a new author in the worksheet
+            new_author = Author(
+                self.authors_manager.generate_unique_id(), full_name, birth_year
+            )
+            # Success
+            if self.authors_manager.append_row(new_author.to_list()):
+                print(
+                    f"Author {new_author.id} - {new_author.full_name} - {new_author.birth_year} added successfully."
                 )
-                if self.authors_manager.append_row(new_author.to_list()):
-                    print(
-                        f"Author {new_author.id} - {new_author.full_name} - {new_author.birth_year} added successfully."
-                    )
-                    break
-                else:
-                    print(
-                        f"Failed to add author {new_author.id} - {new_author.full_name} - {new_author.birth_year}."
-                    )
+                break
+            # Failed
+            print(
+                f"Failed to add author {new_author.id} - {new_author.full_name} - {new_author.birth_year}."
+            )
 
     def edit_author(self):
         """Edits an author."""
         while True:
-
+            # Input the full name or ID
             value = input(
                 "Enter the full name or ID or 'Exit' to back to the previous step: "
             )
             if value.lower() == "exit":
                 break
-
+            # Find the author by the full name or ID
             [author, row] = self.authors_manager.find_author(value)
 
             if type(author) == str and author.lower() == "continue":
                 continue
+            # Input new full name
+            text_message = f'Enter the new full name or empty string not to change the full name or "Exit" to back to the previous step: '
+            new_full_name = self.input_int(text_message)
 
-            text_message = f'Enter the new full name. The full name is {author.full_name} or "Exit" to back to the previous step: '
-            author.full_name = self.input_int(text_message)
-
-            if author.full_name.lower() == "exit":
+            if new_full_name.lower() == "exit":
                 break
 
+            if new_full_name:
+                author.full_name = new_full_name
+            # Input new birth year
             text_message = (
                 "Enter the birth year or 'Exit' to back to the previous step: "
             )
@@ -690,15 +725,17 @@ class Menu(InputMixin):
                 break
 
             author.birth_year = birth_year
+            # Edit the author in the worksheet
+            # Success
             if self.authors_manager.edit_author(row, author):
                 print(
                     f"The author {author.id} - {author.full_name} - {author.birth_year} edited successfully."
                 )
                 break
-            else:
-                print(
-                    f"Failed to edit the author {author.id} - {author.full_name} - {author.birth_year}."
-                )
+            # Failed
+            print(
+                f"Failed to edit the author {author.id} - {author.full_name} - {author.birth_year}."
+            )
 
     def find_books_by_author(self):
         """Finds books by an author."""
@@ -745,22 +782,22 @@ class Menu(InputMixin):
     def add_new_book(self):
         """Adds a new book."""
         while True:
-
+            # Input the full name or ID of the author
             value = input(
                 "Enter the full name or ID of the author or 'Exit' to back to the previous step: "
             )
             if value.lower() == "exit":
                 break
-
+            # Find the author
             [author, row] = self.authors_manager.find_author(value)
 
             if type(author) == str and author.lower() == "continue":
                 continue
-
+            # Input the title
             title = input("Enter the title or 'Exit' to back to the previous step: ")
             if title.lower() == "exit":
                 break
-
+            # Check on duplicates
             record = self.books_manager.check_duplicate_data(
                 {
                     self.books_manager.attributes_name["title"]: title,
@@ -773,37 +810,37 @@ class Menu(InputMixin):
                 )
 
                 continue
-
+            # Input the number of the shelf
             text_message = "Enter the number of the shelf on which the book is stored or 'Exit' to back to the previous step: "
             shelf_number = self.input_int(text_message)
 
             if type(shelf_number) == str and shelf_number.lower() == "exit":
                 break
-
+            # Add a new book in the worksheet
             new_book = Book(
                 self.books_manager.generate_unique_id(), title, author.id, shelf_number
             )
-
+            # Success
             if self.books_manager.append_row(new_book.to_list()):
                 print(
                     f"The book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number}) added successfully."
                 )
                 break
-            else:
-                print(
-                    f"Failed to add the book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number})."
-                )
+            # Failed
+            print(
+                f"Failed to add the book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number})."
+            )
 
     def edit_book(self):
         """Edits a book."""
         while True:
-
+            # Input the full name and ID of the author
             value = input(
                 "Enter the full name or ID of the author or 'Exit' to back to the previous step: "
             )
             if value.lower() == "exit":
                 break
-
+            # Find the author
             [author, row_author] = self.authors_manager.find_author(value)
 
             if type(author) == str and author.lower() == "continue":
