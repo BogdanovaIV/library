@@ -700,7 +700,7 @@ class Menu(InputMixin):
             )
             if record:
                 print(
-                    f"The database contains the author {full_name} - {birth_year}. ID is {record['id']}"
+                    f"The database contains the author {full_name} - {birth_year}. ID is {record[self.authors_manager.attributes_name["id"]]}"
                 )
                 continue
             # Add a new author in the worksheet
