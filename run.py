@@ -44,6 +44,9 @@ class GoogleSheetsClient:
         """
         Authenticates the client using the provided credentials.
 
+        Args:
+            creds (google.oauth2.service_account.Credentials): The credentials for authentication.
+
         Returns:
             gspread.Client: An authenticated gspread client.
         """
@@ -136,7 +139,7 @@ class GoogleSheet:
             bool: True if the row was updated successfully, False otherwise.
         """
         try:
-            self.sheet.update(f'A{row}:Z{row}', [values])
+            self.sheet.update(f"A{row}:Z{row}", [values])
             print("Row updated successfully.")
             return True
         except Exception as e:
@@ -225,7 +228,7 @@ class UniqueIDMixin:
 
 class InputMixin:
     """
-    A mixin class that call input which checks the value.
+    A mixin class that calls input which checks the value.
 
     Methods:
         input_int: Input the value which is an integer.
@@ -238,6 +241,9 @@ class InputMixin:
 
         Args:
             text_message (str): The message is sent to the user.
+
+        Returns:
+            integer or str = "exit": The value inputted by the user.
         """
         value = None
         while True:
@@ -336,9 +342,9 @@ class Authors(UniqueIDMixin, GoogleSheet):
         """
         records = self.get_all_records()
         return {
-            record[self.attributes_name["id"]]: record[
+            record.get(self.attributes_name["id"]): record.get(
                 self.attributes_name["full_name"]
-            ]
+            )
             for record in records
         }
 
@@ -346,43 +352,62 @@ class Authors(UniqueIDMixin, GoogleSheet):
         """
         Find the author by full name or ID.
 
+        Args:
+            value (str or int): The full name or ID of the author to find.
+
         Returns:
-            Author objects and int(row of author found) or None and None.
+            Author: The found Author object.
+            int: The row number where the author was found.
+            or
+            str: "continue" if no author was found.
+            int: -1 if no author was found.
         """
         cells = self.find_all_cells(value)
 
         if not cells:
             print(f"The author with {value} is not found.")
-            return ["continue", -1]
+            return "continue", -1
 
-        index = 0
-        if len(cells) != 1:
-            while True:
-                print("Choose the author:")
-                i = 0
-                while i < len(cells):
-                    values_row = self.get_row(cells[i].row)
-                    print(
-                        f'{i}. {values_row[self.attributes_col["id"]-1]} - {values_row[self.attributes_col["full_name"] - 1]} - {values_row[self.attributes_col["birth_year"] - 1]}'
-                    )
-                    i += 1
-                choice = int(input("Enter your choice: "))
-
-                if choice >= 0 and choice < len(cells):
-                    index = choice
-                    break
-                else:
-                    print("Invalid choice. Please enter a valid option.")
+        if len(cells) == 1:
+            index = 0
+        else:
+            index = self.choose_author(cells)
 
         values_row = self.get_row(cells[index].row)
-        return [
+        return (
             Author(
                 values_row[self.attributes_col["id"] - 1],
                 values_row[self.attributes_col["full_name"] - 1],
                 values_row[self.attributes_col["birth_year"] - 1],
             ),
             cells[index].row,
-        ]
+        )
+
+    def choose_author(self, cells):
+        """
+        Prompts the user to choose an author from multiple matches.
+
+        Args:
+            cells (list): List of matched cells.
+
+        Returns:
+            int: The index of the chosen author.
+        """
+        while True:
+            print("Choose the author:")
+            for i, cell in enumerate(cells):
+                values_row = self.get_row(cell.row)
+                print(
+                    f'{i}. {values_row[self.attributes_col["id"] - 1]} - {values_row[self.attributes_col["full_name"] - 1]} - {values_row[self.attributes_col["birth_year"] - 1]}'
+                )
+            try:
+                choice = int(input("Enter your choice: "))
+                if 0 <= choice < len(cells):
+                    return choice
+                else:
+                    print("Invalid choice. Please enter a valid option.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
 
     def edit_author(self, row, author):
         """
