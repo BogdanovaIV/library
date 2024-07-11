@@ -135,14 +135,13 @@ class GoogleSheet:
         Returns:
             bool: True if the row was updated successfully, False otherwise.
         """
-        i = 0
-        while i < len(values):
-            result = self.update_cell(row, i + 1, values[i])
-            if not result:
-                return False
-            i += 1
-
-        return True
+        try:
+            self.sheet.update(f'A{row}:Z{row}', [values])
+            print("Row updated successfully.")
+            return True
+        except Exception as e:
+            print(f"Failed to update row: {e}")
+            return False
 
     def append_row(self, values):
         """
@@ -190,22 +189,17 @@ class GoogleSheet:
 
     def check_duplicate_data(self, attributes):
         """
-        Checks the database for duplicate data by two columns.
+        Checks the database for duplicate data by specified attributes.
 
         Args:
-            attributes (dictionary): The dictionary where the key is attributes, the value is the value being tested.
+            attributes (dict): A dictionary where the key is an attribute and the value is the value being tested.
 
         Returns:
-            Dictionary with values if it is or None if it is not.
+            dict: The record if a duplicate is found, otherwise None.
         """
         records = self.get_all_records()
         for record in records:
-            result = True
-            for [atrubite, value] in attributes.items():
-                if record[atrubite] != value:
-                    result = False
-                    break
-            if result:
+            if all(record.get(attr) == value for attr, value in attributes.items()):
                 return record
         return None
 
@@ -342,7 +336,9 @@ class Authors(UniqueIDMixin, GoogleSheet):
         """
         records = self.get_all_records()
         return {
-            record[self.attributes_name["id"]]: record[self.attributes_name["full_name"]]
+            record[self.attributes_name["id"]]: record[
+                self.attributes_name["full_name"]
+            ]
             for record in records
         }
 
