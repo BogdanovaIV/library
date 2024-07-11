@@ -127,19 +127,19 @@ class GoogleSheet:
             print(f"Failed to update cell: {e}")
             return False
 
-    def update_row(self, row, values):
+    def update_row(self, row, values_list):
         """
         Updates a row in the worksheet.
 
         Args:
             row (int): The row number of the cell.
-            values (list): The list of values to set in the cells.
+            values_list (list): The list of values to set in the cells.
 
         Returns:
             bool: True if the row was updated successfully, False otherwise.
         """
         try:
-            self.sheet.update(f"A{row}:Z{row}", [values])
+            self.sheet.update(range_name=f"A{row}:Z{row}", values=[values_list])
             print("Row updated successfully.")
             return True
         except Exception as e:
@@ -189,6 +189,27 @@ class GoogleSheet:
             list: A list of gspread.models.Cell objects that match the value.
         """
         return self.sheet.findall(value)
+
+    def find_cells_contain_value(self, attributes):
+        """
+        Finds all cells that match a specific value in the worksheet.
+
+        Args:
+            attributes (dict): A dictionary where the key is an attribute and the value is the value being tested.
+
+
+        Returns:
+            list: A list of gspread.models.Cell objects that match the value.
+        """
+        records = self.sheet.get_all_records()
+        matching_records = []
+        for row, record in enumerate(records, start=2):
+            if any(
+                value.lower() in record.get(attr).lower()
+                for attr, value in attributes.items()
+            ):
+                matching_records.append([row, record])
+        return matching_records
 
     def check_duplicate_data(self, attributes):
         """
@@ -254,7 +275,7 @@ class InputMixin:
                     value = None
                 else:
                     value = int(value)
-                    
+
             except ValueError as e:
                 print(f"Invalid data: {e}, please try again.\n")
             else:
@@ -390,28 +411,33 @@ class Authors(UniqueIDMixin, GoogleSheet):
             Author: The found Author object.
             int: The row number where the author was found.
             or
-            str: "continue" if no author was found.
+            None if no author was found.
             int: -1 if no author was found.
         """
-        cells = self.find_all_cells(value)
+        cells = self.find_cells_contain_value(
+            {
+                self.attributes_name["id"]: value,
+                self.attributes_name["full_name"]: value,
+            },
+        )
 
         if not cells:
-            print(f"The author with {value} is not found.")
-            return "continue", -1
+            print(f"The author with {value} is not found.\n")
+            return None, -1
 
         if len(cells) == 1:
             index = 0
         else:
             index = self.choose_author(cells)
 
-        values_row = self.get_row(cells[index].row)
+        values_row = cells[index][1]
         return (
             Author(
-                values_row[self.attributes_col["id"] - 1],
-                values_row[self.attributes_col["full_name"] - 1],
-                values_row[self.attributes_col["birth_year"] - 1],
+                values_row[self.attributes_name["id"]],
+                values_row[self.attributes_name["full_name"]],
+                values_row[self.attributes_name["birth_year"]],
             ),
-            cells[index].row,
+            cells[index][0],
         )
 
     def choose_author(self, cells):
@@ -426,19 +452,19 @@ class Authors(UniqueIDMixin, GoogleSheet):
         """
         while True:
             print("Choose the author:")
-            for i, cell in enumerate(cells):
-                values_row = self.get_row(cell.row)
+            for i, cell in enumerate(cells, start=1):
+                values_row = cell[1]
                 print(
-                    f'{i}. {values_row[self.attributes_col["id"] - 1]} - {values_row[self.attributes_col["full_name"] - 1]} - {values_row[self.attributes_col["birth_year"] - 1]}'
+                    f'{i}. {values_row[self.attributes_name["id"]]} - {values_row[self.attributes_name["full_name"]]} - {values_row[self.attributes_name["birth_year"]]}'
                 )
             try:
                 choice = int(input("Enter your choice: "))
-                if 0 <= choice < len(cells):
-                    return choice
-                else:
-                    print("Invalid choice. Please enter a valid option.")
-            except ValueError:
-                print("Invalid input. Please enter a number.")
+                if 0 < choice <= len(cells):
+                    return choice - 1
+
+                raise ValueError("Please enter a valid option.")
+            except ValueError as e:
+                print(f"Invalid data: {e}, please try again.\n")
 
     def edit_author(self, row, author):
         """
@@ -696,32 +722,30 @@ class Menu(InputMixin):
         """Edits an author."""
         while True:
             # Input the full name or ID
-            value = input(
+            value = self.input_str(
                 "Enter the full name or ID or 'Exit' to back to the previous step: "
             )
-            if value.lower() == "exit":
+            if value == None:
                 break
             # Find the author by the full name or ID
             [author, row] = self.authors_manager.find_author(value)
 
-            if type(author) == str and author.lower() == "continue":
+            if author == None:
                 continue
             # Input new full name
-            text_message = f'Enter the new full name or empty string not to change the full name or "Exit" to back to the previous step: '
-            new_full_name = self.input_int(text_message)
-
-            if new_full_name.lower() == "exit":
+            new_full_name = self.input_str(
+                "Enter the new full name or empty string not to change the full name or 'Exit' to back to the previous step: ",
+                True,
+            )
+            if new_full_name == None:
                 break
-
-            if new_full_name:
+            elif new_full_name:
                 author.full_name = new_full_name
             # Input new birth year
-            text_message = (
+            birth_year = self.input_int(
                 "Enter the birth year or 'Exit' to back to the previous step: "
             )
-            birth_year = self.input_int(text_message)
-
-            if type(birth_year) == str and birth_year.lower() == "exit":
+            if birth_year == None:
                 break
 
             author.birth_year = birth_year
