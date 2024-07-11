@@ -507,7 +507,7 @@ class Books(UniqueIDMixin, GoogleSheet):
 
         Args:
             row (int): The row number of the cells.
-            author (Book object): The author contains new values.
+            book (Book object): The book contains new values.
 
         Returns:
             bool: True if the row was updated successfully, False otherwise.
@@ -516,34 +516,38 @@ class Books(UniqueIDMixin, GoogleSheet):
 
     def find_book(self, value, author_id):
         """
-        Checks the database for duplicate data by two columns.
+        Checks the database for a book by title or ID and author's ID.
 
         Args:
             value (str): The book's title or ID.
             author_id (str): The author's ID.
 
         Returns:
-            Book object with values and row if it is or None, -1 if it is not.
+            Book: The found Book object.
+            int: The row number where the book was found.
+            or
+            None: If no book was found.
+            int: -1 if no book was found.
         """
-        row = 1
         records = self.get_all_records()
-        for record in records:
-            row += 1
-            if (record[self.attributes_name["author_id"]] == author_id) and (
-                record[self.attributes_name["id"]] == value
-                or record[self.attributes_name["title"]] == value
+        for row, record in enumerate(
+            records, start=2
+        ):  # start=2 to account for the header row
+            if (record.get(self.attributes_col["author_id"]) == author_id) and (
+                record.get(self.attributes_col["id"]) == value
+                or record.get(self.attributes_col["title"]) == value
             ):
-                return [
+                return (
                     Book(
-                        record[self.attributes_name["id"]],
-                        record[self.attributes_name["title"]],
-                        record[self.attributes_name["author_id"]],
-                        record[self.attributes_name["shelf_number"]],
+                        record.get(self.attributes_col["id"]),
+                        record.get(self.attributes_col["title"]),
+                        record.get(self.attributes_col["author_id"]),
+                        record.get(self.attributes_col["shelf_number"]),
                     ),
                     row,
-                ]
+                )
 
-        return [None, -1]
+        return None, -1
 
 
 class Menu(InputMixin):
