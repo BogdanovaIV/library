@@ -807,19 +807,21 @@ class Menu(InputMixin):
         """Adds a new book."""
         while True:
             # Input the full name or ID of the author
-            value = input(
+            value = self.input_str(
                 "Enter the full name or ID of the author or 'Exit' to back to the previous step: "
             )
-            if value.lower() == "exit":
+            if value == None:
                 break
             # Find the author
             [author, row] = self.authors_manager.find_author(value)
 
-            if type(author) == str and author.lower() == "continue":
+            if author == None:
                 continue
             # Input the title
-            title = input("Enter the title or 'Exit' to back to the previous step: ")
-            if title.lower() == "exit":
+            title = self.input_str(
+                "Enter the title or 'Exit' to back to the previous step: "
+            )
+            if title == "exit":
                 break
             # Check on duplicates
             record = self.books_manager.check_duplicate_data(
@@ -830,17 +832,18 @@ class Menu(InputMixin):
             )
             if record:
                 print(
-                    f"The database contains the book {title} - {author.full_name}. ID is {record.id}"
+                    f"The database contains the book {title} - {author.full_name}. ID is {record[self.books_manager.attributes_name["id"]]}"
                 )
 
                 continue
             # Input the number of the shelf
-            text_message = "Enter the number of the shelf on which the book is stored or 'Exit' to back to the previous step: "
-            shelf_number = self.input_int(text_message)
+            shelf_number = self.input_int(
+                "Enter the number of the shelf on which the book is stored or 'Exit' to back to the previous step: "
+            )
 
-            if type(shelf_number) == str and shelf_number.lower() == "exit":
+            if shelf_number == None:
                 break
-            # Add a new book in the worksheet
+            # Add a new book to the worksheet
             new_book = Book(
                 self.books_manager.generate_unique_id(), title, author.id, shelf_number
             )
