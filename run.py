@@ -190,13 +190,13 @@ class GoogleSheet:
         """
         return self.sheet.findall(value)
 
-    def find_cells_contain_value(self, attributes):
+    def find_cells_contain_value(self, attributes_any, attributes_all):
         """
         Finds all cells that match a specific value in the worksheet.
 
         Args:
-            attributes (dict): A dictionary where the key is an attribute and the value is the value being tested.
-
+            attributes_any (dict):A dictionary where the key is an attribute and the value is the value being tested. To match though one of them has to be equal.
+            attributes_all (dict):A dictionary where the key is an attribute and the value is the value being tested. To match all of them have to be equal.
 
         Returns:
             list: A list of gspread.models.Cell objects that match the value.
@@ -206,10 +206,81 @@ class GoogleSheet:
         for row, record in enumerate(records, start=2):
             if any(
                 value.lower() in record.get(attr).lower()
-                for attr, value in attributes.items()
+                for attr, value in attributes_any.items()
+            ) and all(
+                value.lower() in record.get(attr).lower()
+                for attr, value in attributes_all.items()
             ):
                 matching_records.append([row, record])
         return matching_records
+
+    def find_item(self, attributes_any, attributes_all, text_item, print_item_lambda):
+        """
+        Find an item by values that have to be equal.
+
+        Args:
+            attributes_any (dict):A dictionary where the key is an attribute and the value is the value being tested. To match though one of them has to be equal.
+            attributes_all (dict):A dictionary where the key is an attribute and the value is the value being tested. To match all of them have to be equal.
+            text_item (str): String of the name of the item to print to the user.
+            print_item_lambda (lambda): Lambda function which prints the detailed information of the item
+
+        Returns:
+            Dictionary: The found item which contains details.
+            int: The row number where the item was found.
+            or
+            None: If no item was found.
+            int: -1 if no item was found.
+        """
+
+        cells = self.find_cells_contain_value(
+            attributes_any, attributes_all
+        )
+
+        if not cells:
+            print(f"The {text_item} with {value} is not found.\n")
+            return None, -1
+
+        if len(cells) == 1:
+            index = 0
+        else:
+            index = self.choose_item(cells, text_item, print_item_lambda)
+
+        values_row = cells[index][1]
+        return (
+            values_row,
+            cells[index][0],
+        )
+
+    def choose_item(self, cells, text_item, print_item_lambda):
+        """
+        Prompts the user to choose an item from multiple matches.
+
+        Args:
+            cells (list): List of matched cells.
+            text_item (str): String of the name of the item to print to the user.
+            print_item_lambda (lambda): Lambda function which prints the detailed information of the item. 
+                The function has to have two arguments: 
+                i (integer) - The row number where the item was found.
+                values_row (dict) - The item which contains details.
+
+        Returns:
+            int: The index of the chosen item.
+        """
+        while True:
+            print(f'Choose the {text_item}:')
+            for i, cell in enumerate(cells, start=1):
+                values_row = cell[1]
+                print(
+                    print_item_lambda(i, values_row)
+                )
+            try:
+                choice = int(input("Enter your choice: "))
+                if 0 < choice <= len(cells):
+                    return choice - 1
+
+                raise ValueError("Please enter a valid option.")
+            except ValueError as e:
+                print(f"Invalid data: {e}, please try again.\n")
 
     def check_duplicate_data(self, attributes):
         """
@@ -418,7 +489,7 @@ class Authors(UniqueIDMixin, GoogleSheet):
             {
                 self.attributes_name["id"]: value,
                 self.attributes_name["full_name"]: value,
-            },
+            }, {}
         )
 
         if not cells:
@@ -571,7 +642,6 @@ class Books(UniqueIDMixin, GoogleSheet):
         """
         return self.update_row(row, book.to_list())
 
-   
     def find_book(self, value, author_id):
         """
         Checks the database for a book by title or ID and author's ID.
@@ -587,60 +657,32 @@ class Books(UniqueIDMixin, GoogleSheet):
             None: If no book was found.
             int: -1 if no book was found.
         """
-
-        cells = self.find_cells_contain_value(
-            {
+        print_lambda = lambda i, values_row: f'{i}. {values_row[self.attributes_name["id"]]} - {values_row[self.attributes_name["title"]]}'
+        values_row, index = self.find_item(
+             {
                 self.attributes_name["id"]: value,
                 self.attributes_name["title"]: value,
+            },
+            {
                 self.attributes_name["author_id"]: author_id,
             },
+            "book",
+            print_lambda
         )
-
-        if not cells:
-            print(f"The book with {value} is not found.\n")
-            return None, -1
-
-        if len(cells) == 1:
-            index = 0
+        if values_row is None:
+            book = values_row
         else:
-            index = self.choose_book(cells)
-
-        values_row = cells[index][1]
-        return (
-            Book(
+            book =  Book(
                 values_row.get(self.attributes_name["id"]),
                 values_row.get(self.attributes_name["title"]),
                 values_row.get(self.attributes_name["author_id"]),
                 values_row.get(self.attributes_name["shelf_number"]),
-            ),
-            cells[index][0],
+            )
+            
+        return (
+            book,
+            index,
         )
-        
-    def choose_book(self, cells):
-        """
-        Prompts the user to choose a book from multiple matches.
-
-        Args:
-            cells (list): List of matched cells.
-
-        Returns:
-            int: The index of the chosen book.
-        """
-        while True:
-            print("Choose the book:")
-            for i, cell in enumerate(cells, start=1):
-                values_row = cell[1]
-                print(
-                    f'{i}. {values_row[self.attributes_name["id"]]} - {values_row[self.attributes_name["title"]]}'
-                )
-            try:
-                choice = int(input("Enter your choice: "))
-                if 0 < choice <= len(cells):
-                    return choice - 1
-
-                raise ValueError("Please enter a valid option.")
-            except ValueError as e:
-                print(f"Invalid data: {e}, please try again.\n")
 
 
 class Menu(InputMixin):
