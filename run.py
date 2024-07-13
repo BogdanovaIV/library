@@ -232,9 +232,7 @@ class GoogleSheet:
             int: -1 if no item was found.
         """
 
-        cells = self.find_cells_contain_value(
-            attributes_any, attributes_all
-        )
+        cells = self.find_cells_contain_value(attributes_any, attributes_all)
 
         if not cells:
             print(f"The {text_item} with {value} is not found.\n")
@@ -258,8 +256,8 @@ class GoogleSheet:
         Args:
             cells (list): List of matched cells.
             text_item (str): String of the name of the item to print to the user.
-            print_item_lambda (lambda): Lambda function which prints the detailed information of the item. 
-                The function has to have two arguments: 
+            print_item_lambda (lambda): Lambda function which prints the detailed information of the item.
+                The function has to have two arguments:
                 i (integer) - The row number where the item was found.
                 values_row (dict) - The item which contains details.
 
@@ -267,12 +265,10 @@ class GoogleSheet:
             int: The index of the chosen item.
         """
         while True:
-            print(f'Choose the {text_item}:')
+            print(f"Choose the {text_item}:")
             for i, cell in enumerate(cells, start=1):
                 values_row = cell[1]
-                print(
-                    print_item_lambda(i, values_row)
-                )
+                print(print_item_lambda(i, values_row))
             try:
                 choice = int(input("Enter your choice: "))
                 if 0 < choice <= len(cells):
@@ -485,30 +481,30 @@ class Authors(UniqueIDMixin, GoogleSheet):
             None if no author was found.
             int: -1 if no author was found.
         """
-        cells = self.find_cells_contain_value(
+        print_lambda = (
+            lambda i, values_row: f'{i}. {values_row[self.attributes_name["id"]]} - {values_row[self.attributes_name["full_name"]]} - {values_row[self.attributes_name["birth_year"]]}'
+        )
+        values_row, index = self.find_item(
             {
                 self.attributes_name["id"]: value,
                 self.attributes_name["full_name"]: value,
-            }, {}
+            },
+            {},
+            "author",
+            print_lambda,
         )
-
-        if not cells:
-            print(f"The author with {value} is not found.\n")
-            return None, -1
-
-        if len(cells) == 1:
-            index = 0
+        if values_row is None:
+            author = values_row
         else:
-            index = self.choose_author(cells)
-
-        values_row = cells[index][1]
-        return (
-            Author(
+            author = Author(
                 values_row[self.attributes_name["id"]],
                 values_row[self.attributes_name["full_name"]],
                 values_row[self.attributes_name["birth_year"]],
-            ),
-            cells[index][0],
+            )
+
+        return (
+            author,
+            index,
         )
 
     def choose_author(self, cells):
@@ -657,9 +653,11 @@ class Books(UniqueIDMixin, GoogleSheet):
             None: If no book was found.
             int: -1 if no book was found.
         """
-        print_lambda = lambda i, values_row: f'{i}. {values_row[self.attributes_name["id"]]} - {values_row[self.attributes_name["title"]]}'
+        print_lambda = (
+            lambda i, values_row: f'{i}. {values_row[self.attributes_name["id"]]} - {values_row[self.attributes_name["title"]]}'
+        )
         values_row, index = self.find_item(
-             {
+            {
                 self.attributes_name["id"]: value,
                 self.attributes_name["title"]: value,
             },
@@ -667,18 +665,18 @@ class Books(UniqueIDMixin, GoogleSheet):
                 self.attributes_name["author_id"]: author_id,
             },
             "book",
-            print_lambda
+            print_lambda,
         )
         if values_row is None:
             book = values_row
         else:
-            book =  Book(
+            book = Book(
                 values_row.get(self.attributes_name["id"]),
                 values_row.get(self.attributes_name["title"]),
                 values_row.get(self.attributes_name["author_id"]),
                 values_row.get(self.attributes_name["shelf_number"]),
             )
-            
+
         return (
             book,
             index,
