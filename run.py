@@ -21,6 +21,7 @@ class GoogleSheetsClient:
         """
         self.client = self.authenticate(creds)
 
+    @staticmethod
     def get_creds(creds_file):
         """
         Generates credentials from the service account file.
@@ -507,32 +508,6 @@ class Authors(UniqueIDMixin, GoogleSheet):
             index,
         )
 
-    def choose_author(self, cells):
-        """
-        Prompts the user to choose an author from multiple matches.
-
-        Args:
-            cells (list): List of matched cells.
-
-        Returns:
-            int: The index of the chosen author.
-        """
-        while True:
-            print("Choose the author:")
-            for i, cell in enumerate(cells, start=1):
-                values_row = cell[1]
-                print(
-                    f'{i}. {values_row[self.attributes_name["id"]]} - {values_row[self.attributes_name["full_name"]]} - {values_row[self.attributes_name["birth_year"]]}'
-                )
-            try:
-                choice = int(input("Enter your choice: "))
-                if 0 < choice <= len(cells):
-                    return choice - 1
-
-                raise ValueError("Please enter a valid option.")
-            except ValueError as e:
-                print(f"Invalid data: {e}, please try again.\n")
-
     def edit_author(self, row, author):
         """
         Updates the author in the worksheet.
@@ -945,10 +920,11 @@ class Menu(InputMixin):
                     f"The book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number}) added successfully."
                 )
                 break
-            # Failed
-            print(
-                f"Failed to add the book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number})."
-            )
+            else:
+                # Failed
+                print(
+                    f"Failed to add the book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number})."
+                )
 
     def find_book(self, author):
         """
@@ -978,16 +954,17 @@ class Menu(InputMixin):
 
     def edit_book(self):
         """Edits a book."""
-
+        # Find the author
         author, row_author = self.get_author_and_row()
         if author is None:
             return
-
+        # Find the book
         book, row = self.find_book(author)
         if book is None:
             return
 
         while True:
+            # Input the new title
             new_title = self.input_str(
                 "Enter the new title or leave empty to keep the existing title: ", True
             )
@@ -996,7 +973,7 @@ class Menu(InputMixin):
 
             if new_title:
                 book.title = new_title
-
+            # Input the new shelf number
             shelf_number = self.input_int(
                 "Enter the shelf number or 'Exit' to go back: "
             )
@@ -1004,12 +981,14 @@ class Menu(InputMixin):
                 break
 
             book.shelf_number = shelf_number
-
+            # Update the book
+            # Success
             if self.books_manager.update_row(row, book.to_list()):
                 print(
                     f"The book {book.id} - {book.title} - {author.full_name} - shelf ({book.shelf_number}) edited successfully."
                 )
                 break
+            # Failed
             else:
                 print(
                     f"Failed to edit the book {book.id} - {book.title} - {author.full_name} - shelf ({book.shelf_number})."
