@@ -571,6 +571,7 @@ class Books(UniqueIDMixin, GoogleSheet):
         """
         return self.update_row(row, book.to_list())
 
+   
     def find_book(self, value, author_id):
         """
         Checks the database for a book by title or ID and author's ID.
@@ -586,25 +587,60 @@ class Books(UniqueIDMixin, GoogleSheet):
             None: If no book was found.
             int: -1 if no book was found.
         """
-        records = self.get_all_records()
-        for row, record in enumerate(
-            records, start=2
-        ):  # start=2 to account for the header row
-            if (record.get(self.attributes_col["author_id"]) == author_id) and (
-                record.get(self.attributes_col["id"]) == value
-                or record.get(self.attributes_col["title"]) == value
-            ):
-                return (
-                    Book(
-                        record.get(self.attributes_col["id"]),
-                        record.get(self.attributes_col["title"]),
-                        record.get(self.attributes_col["author_id"]),
-                        record.get(self.attributes_col["shelf_number"]),
-                    ),
-                    row,
-                )
 
-        return None, -1
+        cells = self.find_cells_contain_value(
+            {
+                self.attributes_name["id"]: value,
+                self.attributes_name["title"]: value,
+                self.attributes_name["author_id"]: author_id,
+            },
+        )
+
+        if not cells:
+            print(f"The book with {value} is not found.\n")
+            return None, -1
+
+        if len(cells) == 1:
+            index = 0
+        else:
+            index = self.choose_book(cells)
+
+        values_row = cells[index][1]
+        return (
+            Book(
+                values_row.get(self.attributes_name["id"]),
+                values_row.get(self.attributes_name["title"]),
+                values_row.get(self.attributes_name["author_id"]),
+                values_row.get(self.attributes_name["shelf_number"]),
+            ),
+            cells[index][0],
+        )
+        
+    def choose_book(self, cells):
+        """
+        Prompts the user to choose a book from multiple matches.
+
+        Args:
+            cells (list): List of matched cells.
+
+        Returns:
+            int: The index of the chosen book.
+        """
+        while True:
+            print("Choose the book:")
+            for i, cell in enumerate(cells, start=1):
+                values_row = cell[1]
+                print(
+                    f'{i}. {values_row[self.attributes_name["id"]]} - {values_row[self.attributes_name["title"]]}'
+                )
+            try:
+                choice = int(input("Enter your choice: "))
+                if 0 < choice <= len(cells):
+                    return choice - 1
+
+                raise ValueError("Please enter a valid option.")
+            except ValueError as e:
+                print(f"Invalid data: {e}, please try again.\n")
 
 
 class Menu(InputMixin):
@@ -683,13 +719,13 @@ class Menu(InputMixin):
             full_name = self.input_str(
                 "Enter the full name or 'Exit' to back to the previous step: "
             )
-            if full_name == None:
+            if full_name is None:
                 break
             # Input the birth year
             birth_year = self.input_int(
                 "Enter the birth year or 'Exit' to back to the previous step: "
             )
-            if birth_year == None:
+            if birth_year is None:
                 break
             # check on duplicates
             record = self.authors_manager.check_duplicate_data(
@@ -725,19 +761,19 @@ class Menu(InputMixin):
             value = self.input_str(
                 "Enter the full name or ID or 'Exit' to back to the previous step: "
             )
-            if value == None:
+            if value is None:
                 break
             # Find the author by the full name or ID
             [author, row] = self.authors_manager.find_author(value)
 
-            if author == None:
+            if author is None:
                 continue
             # Input new full name
             new_full_name = self.input_str(
                 "Enter the new full name or empty string not to change the full name or 'Exit' to back to the previous step: ",
                 True,
             )
-            if new_full_name == None:
+            if new_full_name is None:
                 break
             elif new_full_name:
                 author.full_name = new_full_name
@@ -745,7 +781,7 @@ class Menu(InputMixin):
             birth_year = self.input_int(
                 "Enter the birth year or 'Exit' to back to the previous step: "
             )
-            if birth_year == None:
+            if birth_year is None:
                 break
 
             author.birth_year = birth_year
@@ -803,20 +839,36 @@ class Menu(InputMixin):
                     f"{book.id} - {book.title} - {author_name} - shelf ({book.shelf_number})"
                 )
 
+    def get_author_and_row(self):
+        """
+        Gets the author and row number based on user input.
+
+        Returns:
+            tuple: (Author, int) if author is found, where Author is the Author object
+                and int is the row number in the worksheet.
+            None, None if user exits or author is not found.
+        """
+        while True:
+            value = self.input_str(
+                "Enter the full name or ID of the author or 'Exit' to go back: "
+            )
+            if value is None:
+                return None, None
+
+            author, row_author = self.authors_manager.find_author(value)
+            if author:
+                return author, row_author
+            else:
+                print(f"Author '{value}' not found.")
+
     def add_new_book(self):
         """Adds a new book."""
         while True:
-            # Input the full name or ID of the author
-            value = self.input_str(
-                "Enter the full name or ID of the author or 'Exit' to back to the previous step: "
-            )
-            if value == None:
-                break
             # Find the author
-            [author, row] = self.authors_manager.find_author(value)
+            author, row = self.get_author_and_row()
+            if author is None:
+                return
 
-            if author == None:
-                continue
             # Input the title
             title = self.input_str(
                 "Enter the title or 'Exit' to back to the previous step: "
@@ -841,7 +893,7 @@ class Menu(InputMixin):
                 "Enter the number of the shelf on which the book is stored or 'Exit' to back to the previous step: "
             )
 
-            if shelf_number == None:
+            if shelf_number is None:
                 break
             # Add a new book to the worksheet
             new_book = Book(
@@ -858,56 +910,61 @@ class Menu(InputMixin):
                 f"Failed to add the book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number})."
             )
 
-    def edit_book(self):
-        """Edits a book."""
+    def find_book(self, author):
+        """
+        Finds the book and its row number based on user input.
+
+        Args:
+            author (Author): The Author object for whom to find the book.
+
+        Returns:
+            tuple: (Book, int) if book is found, where Book is the Book object
+                and int is the row number in the worksheet.
+            None, None if user exits or book is not found.
+        """
+
         while True:
-            # Input the full name and ID of the author
-            value = input(
-                "Enter the full name or ID of the author or 'Exit' to back to the previous step: "
+            value = self.input_str(
+                "Enter the title or ID of the book or 'Exit' to go back: "
             )
-            if value.lower() == "exit":
-                break
-            # Find the author
-            [author, row_author] = self.authors_manager.find_author(value)
+            if value is None:
+                return None, None
 
-            if type(author) == str and author.lower() == "continue":
-                continue
-
-            book = None
-            row = None
-            while True:
-                value = input(
-                    "Enter the title or ID or 'Exit' to back to the previous step: "
-                )
-                if value.lower() == "exit":
-                    book = "exit"
-                    break
-
-                [book, row] = self.books_manager.find_book(value, author.id)
-
-                if book:
-                    break
+            book, row = self.books_manager.find_book(value, author.id)
+            if book:
+                return book, row
+            else:
                 print(f"The book {value} - {author.full_name} is not found")
 
-            if type(book) == str and book.lower() == "exit":
-                break
+    def edit_book(self):
+        """Edits a book."""
 
-            new_title = input(
-                "Enter the new title or empty string not to change the title or 'Exit' to back to the previous step: "
+        author, row_author = self.get_author_and_row()
+        if author is None:
+            return
+
+        book, row = self.find_book(author)
+        if book is None:
+            return
+
+        while True:
+            new_title = self.input_str(
+                "Enter the new title or leave empty to keep the existing title: ", True
             )
-            if new_title.lower() == "exit":
+            if new_title is None:
                 break
 
             if new_title:
                 book.title = new_title
 
-            text_message = "Enter the number of the shelf on which the book is stored or 'Exit' to back to the previous step: "
-            shelf_number = self.input_int(text_message)
-
-            if type(shelf_number) == str and shelf_number.lower() == "exit":
+            shelf_number = self.input_int(
+                "Enter the shelf number or 'Exit' to go back: "
+            )
+            if shelf_number is None:
                 break
 
             book.shelf_number = shelf_number
+
             if self.books_manager.update_row(row, book.to_list()):
                 print(
                     f"The book {book.id} - {book.title} - {author.full_name} - shelf ({book.shelf_number}) edited successfully."
