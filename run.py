@@ -205,10 +205,10 @@ class GoogleSheet:
         records = self.sheet.get_all_records()
         matching_records = []
         for row, record in enumerate(records, start=2):
-            if any(
+            if (not attributes_any or any(
                 value.lower() in record.get(attr).lower()
                 for attr, value in attributes_any.items()
-            ) and all(
+            )) and all(
                 value.lower() in record.get(attr).lower()
                 for attr, value in attributes_all.items()
             ):
@@ -236,7 +236,7 @@ class GoogleSheet:
         cells = self.find_cells_contain_value(attributes_any, attributes_all)
 
         if not cells:
-            print(f"The {text_item} with {value} is not found.\n")
+            print(f"The {text_item} is not found.\n")
             return None, -1
 
         if len(cells) == 1:
@@ -600,6 +600,30 @@ class Books(UniqueIDMixin, GoogleSheet):
             for record in records
         ]
 
+    def get_all_books_with_selection(self, attributes_any, attributes_all):
+        """
+        Get all books with section.
+
+        Args:
+            attributes_any (dict): A dictionary where the key is an attribute and the value is the value being tested. To match though one of them has to be equal.
+            attributes_all (dict): A dictionary where the key is an attribute and the value is the value being tested. To match all of them have to be equal.
+
+        Returns:
+            List of Book objects: The list of Book objects.
+        """
+        cells = self.find_cells_contain_value(attributes_any, attributes_all)
+        books = []
+        for cell in cells:
+            books.append(
+                Book(
+                    cell[1][self.attributes_name["id"]],
+                    cell[1][self.attributes_name["title"]],
+                    cell[1][self.attributes_name["author_id"]],
+                    cell[1][self.attributes_name["shelf_number"]],
+                )
+            )
+        return books
+
     def edit_book(self, row, book):
         """
         Updates the book in the worksheet.
@@ -715,7 +739,7 @@ class Menu(InputMixin):
             elif choice == "3":
                 self.edit_author()
             elif choice == "4":
-                self.find_books_by_author()
+                self.get_books_by_author()
             elif choice == "5":
                 break
             else:
@@ -812,8 +836,26 @@ class Menu(InputMixin):
                 f"Failed to edit the author {author.id} - {author.full_name} - {author.birth_year}."
             )
 
-    def find_books_by_author(self):
-        """Finds books by an author."""
+    def get_books_by_author(self):
+        """Gets books by an author."""
+        author, row = self.get_author_and_row()
+        if author is None:
+            return
+        
+        books = self.books_manager.get_all_books_with_selection(
+            {
+            },
+            {
+                self.books_manager.attributes_name["author_id"]: author.id,
+            }
+        )
+        if books:
+            for book in books:
+                print(f"{book.id} - {book.title} - {author.full_name} - shelf ({book.shelf_number})")
+        else:
+            print("No books found.")
+                
+
 
     # Books menu
     def display_books_menu(self):
@@ -834,15 +876,20 @@ class Menu(InputMixin):
             elif choice == "3":
                 self.edit_book()
             elif choice == "4":
-                self.find_books_by_title()
+                self.get_books_by_tittle()
             elif choice == "5":
                 break
             else:
                 print("Invalid choice. Please enter a valid option.")
 
-    def get_all_books(self):
-        """Displays all books."""
-        books = self.books_manager.get_all_books()
+    def print_books(self, books):
+        """
+        Print all books.
+        
+        Args:
+            books (list): The lust of Book objects to print.
+
+        """
         authors = self.authors_manager.get_all_authors_dictionary()
         for book in books:
             try:
@@ -853,6 +900,33 @@ class Menu(InputMixin):
                 print(
                     f"{book.id} - {book.title} - {author_name} - shelf ({book.shelf_number})"
                 )
+
+
+    def get_all_books(self):
+        """Displays all books."""
+        books = self.books_manager.get_all_books()
+        self.print_books(books)
+              
+    def get_books_by_tittle(self):
+        """Gets books by a part of the title."""
+        # Input the title
+        title = self.input_str(
+            "Enter the title: "
+        )
+        if not title:
+            print("The title cannot be empty.")
+        else:            
+            books = self.books_manager.get_all_books_with_selection(
+                {
+                    self.books_manager.attributes_name["title"]: title
+                },
+                {
+                }
+            )
+            if books:
+                self.print_books(books)
+            else:
+                print("No books found.")
 
     def get_author_and_row(self):
         """
