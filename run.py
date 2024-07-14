@@ -271,7 +271,7 @@ class GoogleSheet:
                 values_row = cell[1]
                 print(print_item_lambda(i, values_row))
             try:
-                choice = int(input("Enter your choice: "))
+                choice = int(input("Enter your choice:\n"))
                 if 0 < choice <= len(cells):
                     return choice - 1
 
@@ -708,7 +708,7 @@ class Menu(InputMixin):
             print("1. Authors")
             print("2. Books")
             print("3. Exit")
-            choice = input("Enter your choice: ")
+            choice = input("Enter your choice:\n")
 
             if choice == "1":
                 self.display_authors_menu()
@@ -730,7 +730,7 @@ class Menu(InputMixin):
             print("3. Edit an author")
             print("4. Find books by an author")
             print("5. Back to the previous step")
-            choice = input("Enter your choice: ")
+            choice = input("Enter your choice:\n")
 
             if choice == "1":
                 self.get_all_authors()
@@ -756,13 +756,13 @@ class Menu(InputMixin):
         while True:
             # Input the full name
             full_name = self.input_str(
-                "Enter the full name or 'Exit' to back to the previous step: "
+                "Enter the full name or 'Exit' to back to the previous step:\n"
             )
             if full_name is None:
                 break
             # Input the birth year
             birth_year = self.input_int(
-                "Enter the birth year or 'Exit' to back to the previous step: "
+                "Enter the birth year or 'Exit' to back to the previous step:\n"
             )
             if birth_year is None:
                 break
@@ -798,7 +798,7 @@ class Menu(InputMixin):
         while True:
             # Input the full name or ID
             value = self.input_str(
-                "Enter the full name or ID or 'Exit' to back to the previous step: "
+                "Enter the full name or ID or 'Exit' to back to the previous step:\n"
             )
             if value is None:
                 break
@@ -809,7 +809,7 @@ class Menu(InputMixin):
                 continue
             # Input new full name
             new_full_name = self.input_str(
-                "Enter the new full name or empty string not to change the full name or 'Exit' to back to the previous step: ",
+                "Enter the new full name or empty string not to change the full name or 'Exit' to back to the previous step:\n",
                 True,
             )
             if new_full_name is None:
@@ -818,7 +818,7 @@ class Menu(InputMixin):
                 author.full_name = new_full_name
             # Input new birth year
             birth_year = self.input_int(
-                "Enter the birth year or 'Exit' to back to the previous step: "
+                "Enter the birth year or 'Exit' to back to the previous step:\n"
             )
             if birth_year is None:
                 break
@@ -867,7 +867,7 @@ class Menu(InputMixin):
             print("3. Edit a book")
             print("4. Find books by part of the title")
             print("5. Back to the previous step")
-            choice = input("Enter your choice: ")
+            choice = input("Enter your choice:\n")
 
             if choice == "1":
                 self.get_all_books()
@@ -911,7 +911,7 @@ class Menu(InputMixin):
         """Gets books by a part of the title."""
         # Input the title
         title = self.input_str(
-            "Enter the title: "
+            "Enter the title:\n"
         )
         if not title:
             print("The title cannot be empty.")
@@ -960,7 +960,7 @@ class Menu(InputMixin):
 
             # Input the title
             title = self.input_str(
-                "Enter the title or 'Exit' to back to the previous step: "
+                "Enter the title or 'Exit' to back to the previous step:\n"
             )
             if title == "exit":
                 break
@@ -979,7 +979,7 @@ class Menu(InputMixin):
                 continue
             # Input the number of the shelf
             shelf_number = self.input_int(
-                "Enter the number of the shelf on which the book is stored or 'Exit' to back to the previous step: "
+                "Enter the number of the shelf on which the book is stored or 'Exit' to back to the previous step:\n"
             )
 
             if shelf_number is None:
@@ -1040,7 +1040,7 @@ class Menu(InputMixin):
         while True:
             # Input the new title
             new_title = self.input_str(
-                "Enter the new title or leave empty to keep the existing title: ", True
+                "Enter the new title or leave empty to keep the existing title:\n", True
             )
             if new_title is None:
                 break
@@ -1049,7 +1049,7 @@ class Menu(InputMixin):
                 book.title = new_title
             # Input the new shelf number
             shelf_number = self.input_int(
-                "Enter the shelf number or 'Exit' to go back: "
+                "Enter the shelf number or 'Exit' to go back:\n"
             )
             if shelf_number is None:
                 break
