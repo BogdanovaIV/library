@@ -96,37 +96,6 @@ class GoogleSheet:
         """
         return self.sheet.get_all_records()
 
-    def get_row(self, index):
-        """
-        Retrieves a specific row from the worksheet.
-
-        Args:
-            index (int): The index of the row to retrieve.
-
-        Returns:
-            list: A list containing the values in the row.
-        """
-        return self.sheet.row_values(index)
-
-    def update_cell(self, row, col, value):
-        """
-        Updates a specific cell in the worksheet.
-
-        Args:
-            row (int): The row number of the cell.
-            col (int): The column number of the cell.
-            value (str): The value to set in the cell.
-
-        Returns:
-            bool: True if the cell was updated successfully, False otherwise.
-        """
-        try:
-            self.sheet.update_cell(row, col, value)
-            print("Cell updated successfully.")
-            return True
-        except gspread.exceptions.APIError as e:
-            print(f"Failed to update cell: {e}")
-            return False
 
     def update_row(self, row, values_list):
         """
@@ -165,31 +134,6 @@ class GoogleSheet:
             print(f"Failed to append row: {e}")
             return False
 
-    def find_in_column(self, col, value):
-        """
-        Finds a value in a specific column of the worksheet.
-
-        Args:
-            col (int): The column number to search in.
-            value (str): The value to search for.
-
-        Returns:
-            gspread.models.Cell or None: The cell containing the value, or None if not found.
-        """
-        cell = self.sheet.find(value, in_column=col)
-        return cell
-
-    def find_all_cells(self, value):
-        """
-        Finds all cells that match a specific value in the worksheet.
-
-        Args:
-            value (str): The value to search for.
-
-        Returns:
-            list: A list of gspread.models.Cell objects that match the value.
-        """
-        return self.sheet.findall(value)
 
     def find_cells_contain_value(self, attributes_any, attributes_all):
         """
@@ -412,6 +356,15 @@ class Author:
         """
         return [self.id, self.full_name, self.birth_year]
 
+    def to_fstring(self):
+        """
+        Converts the author's details to a f-string.
+
+        Returns:
+            f-string: A f-string containing the author's details.
+        """
+        return f"{self.id} - {self.full_name} - {self.birth_year}"
+
 
 class Authors(UniqueIDMixin, GoogleSheet):
     """
@@ -433,7 +386,7 @@ class Authors(UniqueIDMixin, GoogleSheet):
             "full_name": "FULL NAME",
             "birth_year": "BIRTH YEAR",
         }
-        self.attributes_col = {"id": 1, "full_name": 2, "birth_year": 3}
+ 
         super().__init__(sheet)
 
     def get_all_authors(self):
@@ -557,6 +510,18 @@ class Book:
         """
         return [self.id, self.title, self.author_id, self.shelf_number]
 
+    def to_fsting(self, author_full_name):
+        """
+        Converts the book's details to a f-string.
+
+        Args:
+            author_full_name (str): The author's full name.
+
+        Returns:
+            f-string: A f-string containing the book's details.
+        """
+        return f"{self.id} - {self.title} - {author_full_name} - shelf ({self.shelf_number})"
+
 
 class Books(UniqueIDMixin, GoogleSheet):
     """
@@ -579,7 +544,7 @@ class Books(UniqueIDMixin, GoogleSheet):
             "author_id": "AUTHOR (ID)",
             "shelf_number": "SHELF",
         }
-        self.attributes_col = {"id": 1, "title": 2, "author_id": 3, "shelf_number": 4}
+ 
         super().__init__(sheet)
 
     def get_all_books(self):
@@ -749,7 +714,7 @@ class Menu(InputMixin):
         """Displays all authors."""
         authors = self.authors_manager.get_all_authors()
         for author in authors:
-            print(f"{author.id} - {author.full_name} - {author.birth_year}")
+            print(author.to_fstring())
 
     def add_new_author(self):
         """Adds a new author."""
@@ -785,12 +750,12 @@ class Menu(InputMixin):
             # Success
             if self.authors_manager.append_row(new_author.to_list()):
                 print(
-                    f"Author {new_author.id} - {new_author.full_name} - {new_author.birth_year} added successfully."
+                    f"Author {new_author.to_fstring()} added successfully."
                 )
                 break
             # Failed
             print(
-                f"Failed to add author {new_author.id} - {new_author.full_name} - {new_author.birth_year}."
+                f"Failed to add author {new_author.to_fstring()}."
             )
 
     def edit_author(self):
@@ -828,12 +793,12 @@ class Menu(InputMixin):
             # Success
             if self.authors_manager.edit_author(row, author):
                 print(
-                    f"The author {author.id} - {author.full_name} - {author.birth_year} edited successfully."
+                    f"The author {author.to_fstring()} edited successfully."
                 )
                 break
             # Failed
             print(
-                f"Failed to edit the author {author.id} - {author.full_name} - {author.birth_year}."
+                f"Failed to edit the author {author.to_fstring()}."
             )
 
     def get_books_by_author(self):
@@ -851,9 +816,9 @@ class Menu(InputMixin):
         )
         if books:
             for book in books:
-                print(f"{book.id} - {book.title} - {author.full_name} - shelf ({book.shelf_number})")
+                print(book.to_fsting(author.full_name))
         else:
-            print("No books found.")
+            print(f"No books found by {author.full_name}")
                 
 
 
@@ -893,12 +858,12 @@ class Menu(InputMixin):
         authors = self.authors_manager.get_all_authors_dictionary()
         for book in books:
             try:
-                author_name = authors[book.author_id]
+                author_full_name = authors[book.author_id]
             except KeyError as e:
-                author_name = "Invalid author's ID"
+                author_full_name = "Invalid author's ID"
             finally:
                 print(
-                    f"{book.id} - {book.title} - {author_name} - shelf ({book.shelf_number})"
+                    book.to_fsting(author_full_name)
                 )
 
 
@@ -991,13 +956,13 @@ class Menu(InputMixin):
             # Success
             if self.books_manager.append_row(new_book.to_list()):
                 print(
-                    f"The book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number}) added successfully."
+                    f"The book {new_book.to_fsting(author.full_name)} added successfully."
                 )
                 break
             else:
                 # Failed
                 print(
-                    f"Failed to add the book {new_book.id} - {new_book.title} - {author.full_name} - shelf ({new_book.shelf_number})."
+                    f"Failed to add the book {new_book.to_fsting(author.full_name)}."
                 )
 
     def find_book(self, author):
@@ -1059,13 +1024,13 @@ class Menu(InputMixin):
             # Success
             if self.books_manager.update_row(row, book.to_list()):
                 print(
-                    f"The book {book.id} - {book.title} - {author.full_name} - shelf ({book.shelf_number}) edited successfully."
+                    f"The book {book.to_fsting(author.full_name)} edited successfully."
                 )
                 break
             # Failed
             else:
                 print(
-                    f"Failed to edit the book {book.id} - {book.title} - {author.full_name} - shelf ({book.shelf_number})."
+                    f"Failed to edit the book {book.to_fsting(author.full_name)}."
                 )
 
 
