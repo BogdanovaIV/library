@@ -118,3 +118,24 @@ To choose one of the options, the user has to input the number of the option and
 - [OAuth 2.0](https://oauth.net/2/): An authorization framework used to obtain limited access to user accounts on an HTTP service. This project uses OAuth 2.0 to securely access Google Sheets data through a service account.
 ### Data Formats
 - [JSON](https://www.json.org/json-en.html): Used for configuration and data exchange. The credentials for the Google service account are stored in a JSON file, and JSON is also used for structured data interchange.
+
+## Testing
+
+Please refer to the [TESTING.md](TESTING.md) file for all test-related documentation.
+
+## Deployment
+
+### Prerequisites
+Before running the application locally, ensure you have the following installed:
+- Python (preferably the latest version, check the version with python --version).
+- pip (Python package installer, included with Python installations).
+- Git (for cloning the repository).
+### Steps to Deploy Locally
+- Clone the Repository
+  git clone https://github.com/BogdanovaIV/library.git
+  cd library
+- Create the creds.json File. Ensure you have the creds.json file, which contains your Google API credentials. Place the creds.json in the project directory
+- Install Dependencies. Install the required packages listed in the requirements.txt file:
+  pip install -r requirements.txt
+- Run the Application. Run your main application script.
+  python run.py
