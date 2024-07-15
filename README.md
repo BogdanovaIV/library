@@ -124,6 +124,36 @@ To choose one of the options, the user has to input the number of the option and
 Please refer to the [TESTING.md](TESTING.md) file for all test-related documentation.
 
 ## Deployment
+The application was deployed to Heroku using the web interface. 
+The live link can be found [here](https://library2024-806c35817f2e.herokuapp.com/)
+The steps to deploy are as follows:
+- 1. Login to Heroku
+     Go to [Heroku](https://dashboard.heroku.com/) and log in to your account. If you don't have an account, you can sign up for free.
+- 2. Create a New Application
+     - Click on the "New" button in the top right corner of the dashboard.
+     - Select "Create new app" from the dropdown menu.
+     - Enter a name for your app and select your region.
+     - Click the "Create app" button.
+- 3. Set Up Environment Variables
+     - Go to the "Settings" tab of your Heroku app.
+     - Click "Reveal Config Vars".
+     - Add any necessary environment variables: CREDS equal JSON and PORT equal 8000
+- 4. Buildpacks
+     - Click "Add buildpack"
+     - Chose python and nodejs
+- 5. Connect to GitHub
+     - In the "Deploy" tab, go to the "Deployment method" section.
+     - Click on the "GitHub" button to connect your GitHub account to Heroku.
+     - Once connected, search for the repository you want to deploy.
+     - Click the "Connect" button next to your repository.
+- 6. Automatic Deploys (Optional)
+     - In the "Automatic deploys" section, you can enable automatic deploys for a specific branch (typically main or master).
+     - Click "Enable Automatic Deploys" if you want Heroku to automatically deploy every time you push changes to the specified branch.
+- 7. Manual Deploy
+     - In the "Manual deploy" section, select the branch you want to deploy and click "Deploy Branch".
+     - Heroku will start the deployment process. You can view the build progress in the activity feed.
+
+## Local Deployment
 
 ### Prerequisites
 Before running the application locally, ensure you have the following installed:
@@ -139,3 +169,9 @@ Before running the application locally, ensure you have the following installed:
   pip install -r requirements.txt
 - Run the Application. Run your main application script.
   python run.py
+
+  ## Future Improvements
+
+  - Delete items from the database.
+  - Save information about people who take the book.
+  - Add more detailed information about books like descriptions, reviews, etc.
