@@ -457,7 +457,7 @@ class Authors(UniqueIDMixin, GoogleSheet):
             )
             
         if author:
-            print(f"The author is {author.to_fsting()}")
+            print(f"The author is {author.to_fstring()}")
             
         return (
             author,
@@ -513,7 +513,7 @@ class Book:
         """
         return [self.id, self.title, self.author_id, self.shelf_number]
 
-    def to_fsting(self, author_full_name):
+    def to_fstring(self, author_full_name):
         """
         Converts the book's details to a f-string.
 
@@ -605,13 +605,14 @@ class Books(UniqueIDMixin, GoogleSheet):
         """
         return self.update_row(row, book.to_list())
 
-    def find_book(self, value, author_id):
+    def find_book(self, value, author_id, author_full_name):
         """
         Checks the database for a book by title or ID and author's ID.
 
         Args:
             value (str): The book's title or ID.
             author_id (str): The author's ID.
+            author_full_name (str): The author's full name.
 
         Returns:
             Book: The found Book object.
@@ -645,7 +646,7 @@ class Books(UniqueIDMixin, GoogleSheet):
             )
         
         if book:
-            print(f"The book is {book.to_fsting()}")
+            print(f"The book is {book.to_fstring(author_full_name)}")
         return (
             book,
             index,
@@ -821,7 +822,7 @@ class Menu(InputMixin):
         )
         if books:
             for book in books:
-                print(book.to_fsting(author.full_name))
+                print(book.to_fstring(author.full_name))
         else:
             print(f"No books found by {author.full_name}")
                 
@@ -868,7 +869,7 @@ class Menu(InputMixin):
                 author_full_name = "Invalid author's ID"
             finally:
                 print(
-                    book.to_fsting(author_full_name)
+                    book.to_fstring(author_full_name)
                 )
 
 
@@ -961,13 +962,13 @@ class Menu(InputMixin):
             # Success
             if self.books_manager.append_row(new_book.to_list()):
                 print(
-                    f"The book {new_book.to_fsting(author.full_name)} added successfully."
+                    f"The book {new_book.to_fstring(author.full_name)} added successfully."
                 )
                 break
             else:
                 # Failed
                 print(
-                    f"Failed to add the book {new_book.to_fsting(author.full_name)}."
+                    f"Failed to add the book {new_book.to_fstring(author.full_name)}."
                 )
 
     def find_book(self, author):
@@ -990,7 +991,7 @@ class Menu(InputMixin):
             if value is None:
                 return None, None
 
-            book, row = self.books_manager.find_book(value, author.id)
+            book, row = self.books_manager.find_book(value, author.id, author.full_name)
             if book:
                 return book, row
             else:
@@ -1029,13 +1030,13 @@ class Menu(InputMixin):
             # Success
             if self.books_manager.update_row(row, book.to_list()):
                 print(
-                    f"The book {book.to_fsting(author.full_name)} edited successfully."
+                    f"The book {book.to_fstring(author.full_name)} edited successfully."
                 )
                 break
             # Failed
             else:
                 print(
-                    f"Failed to edit the book {book.to_fsting(author.full_name)}."
+                    f"Failed to edit the book {book.to_fstring(author.full_name)}."
                 )
 
 
