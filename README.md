@@ -175,3 +175,17 @@ Before running the application locally, ensure you have the following installed:
   - Delete items from the database.
   - Save information about people who take the book.
   - Add more detailed information about books like descriptions, reviews, etc.
+
+## Credits 
+
+### Content 
+
+- Information about authors and books was taken from free sources like Wikipedia
+
+
+### Acknowledgments
+
+- [Juliia Konovalova](https://github.com/IuliiaKonovalova/) was a great mentor who helped me to reveal my abilities and gave valuable advice.
+- [Code Institute team](https://codeinstitute.net/) supported me and provided all the information that I needed.
+- [Github](https://github.com/) provided free access to a versioning system.
+- [Heroku](heroku.com) provided a service to deploy an application.
