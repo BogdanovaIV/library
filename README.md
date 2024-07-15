@@ -100,3 +100,21 @@ To choose one of the options, the user has to input the number of the option and
      ![The found books](documentation/features/find-books-by-title.png)
 - 5. Back to the previous step - return to the Main menu.
 
+## Technologies Used
+
+### Programming Language
+- [Python 3.12.2](https://www.python.org/downloads/release/python-3122/): A versatile and widely-used programming language known for its readability and extensive libraries. This project is primarily built using Python due to its powerful data manipulation capabilities and ease of integration with other technologies.
+### Libraries and Frameworks
+- [gspread](https://docs.gspread.org/en/v6.0.0/): A Python library that provides easy access to Google Sheets API. It allows for seamless reading, writing, and updating of Google Sheets.
+- [google-auth](https://google-auth.readthedocs.io/en/master/): A library to authenticate and authorize Google APIs. Specifically, google.oauth2.service_account is used to handle service account credentials for secure access to Google Sheets.
+- [uuid](https://docs.python.org/3/library/uuid.html): A Python library used to generate unique identifiers for records, ensuring that each entry in the Google Sheets has a unique ID.
+### Google Cloud Platform
+- [Google Sheets API](https://developers.google.com/sheets/api/quickstart/python?hl=en): An API provided by Google that allows interaction with Google Sheets. This project leverages the API to read, write, and manage data stored in Google Sheets.
+- [Google Drive API](https://developers.google.com/drive/api/quickstart/python?hl=en): Used for additional operations related to file management in Google Drive, complementing the Google Sheets API functionalities.
+### Google Cloud Platform
+- [VS Code](https://code.visualstudio.com/): Popular Integrated Development Environments (IDEs) that provide robust support for Python development, including code completion, debugging, and version control integration.
+- [Github](https://github.com/) - A version control system used to manage code changes and collaborate with other developers.
+### Authentication and Security
+- [OAuth 2.0](https://oauth.net/2/): An authorization framework used to obtain limited access to user accounts on an HTTP service. This project uses OAuth 2.0 to securely access Google Sheets data through a service account.
+### Data Formats
+- [JSON](https://www.json.org/json-en.html): Used for configuration and data exchange. The credentials for the Google service account are stored in a JSON file, and JSON is also used for structured data interchange.
