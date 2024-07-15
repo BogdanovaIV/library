@@ -455,7 +455,10 @@ class Authors(UniqueIDMixin, GoogleSheet):
                 values_row[self.attributes_name["full_name"]],
                 values_row[self.attributes_name["birth_year"]],
             )
-
+            
+        if author:
+            print(f"The author is {author.to_fsting()}")
+            
         return (
             author,
             index,
@@ -640,7 +643,9 @@ class Books(UniqueIDMixin, GoogleSheet):
                 values_row.get(self.attributes_name["author_id"]),
                 values_row.get(self.attributes_name["shelf_number"]),
             )
-
+        
+        if book:
+            print(f"The book is {book.to_fsting()}")
         return (
             book,
             index,
