@@ -140,8 +140,8 @@ class GoogleSheet:
         Finds all cells that match a specific value in the worksheet.
 
         Args:
-            attributes_any (dict):A dictionary where the key is an attribute and the value is the value being tested. To match though one of them has to be equal.
-            attributes_all (dict):A dictionary where the key is an attribute and the value is the value being tested. To match all of them have to be equal.
+            attributes_any (dict): A dictionary where the key is an attribute and the value is the value being tested. To match though one of them has to be equal.
+            attributes_all (dict): A dictionary where the key is an attribute and the value is the value being tested. To match all of them have to be equal.
 
         Returns:
             list: A list of gspread.models.Cell objects that match the value.
@@ -164,8 +164,8 @@ class GoogleSheet:
         Find an item by values that have to be equal.
 
         Args:
-            attributes_any (dict):A dictionary where the key is an attribute and the value is the value being tested. To match though one of them has to be equal.
-            attributes_all (dict):A dictionary where the key is an attribute and the value is the value being tested. To match all of them have to be equal.
+            attributes_any (dict): A dictionary where the key is an attribute and the value is the value being tested. To match though one of them has to be equal.
+            attributes_all (dict): A dictionary where the key is an attribute and the value is the value being tested. To match all of them have to be equal.
             text_item (str): String of the name of the item to print to the user.
             print_item_lambda (lambda): Lambda function which prints the detailed information of the item
 
@@ -231,7 +231,7 @@ class GoogleSheet:
             attributes (dict): A dictionary where the key is an attribute and the value is the value being tested.
 
         Returns:
-            dict: The record if a duplicate is found, otherwise None.
+            Dictionary: The record if a duplicate is found, otherwise None.
         """
         records = self.get_all_records()
         for record in records:
@@ -380,7 +380,7 @@ class Authors(UniqueIDMixin, GoogleSheet):
         Args:
             sheet (gspread.models.Worksheet): The worksheet object.
         """
-        # Use the dictionary to have the feature to quickly change column's position
+        # Use the dictionary to have the feature to quickly change a column's position
         self.attributes_name = {
             "id": "ID",
             "full_name": "FULL NAME",
@@ -540,7 +540,7 @@ class Books(UniqueIDMixin, GoogleSheet):
         Args:
             sheet (gspread.models.Worksheet): The worksheet object.
         """
-        # Use the dictionary to have the feature to quickly change column's position
+        # Use the dictionary to have the feature to quickly change a column's position
         self.attributes_name = {
             "id": "ID",
             "title": "TITLE",
@@ -737,7 +737,7 @@ class Menu(InputMixin):
             )
             if birth_year is None:
                 break
-            # check on duplicates
+            # Check on duplicates
             record = self.authors_manager.check_duplicate_data(
                 {
                     self.authors_manager.attributes_name["full_name"]: full_name,
@@ -749,7 +749,7 @@ class Menu(InputMixin):
                     f"The database contains the author {full_name} - {birth_year}. ID is {record[self.authors_manager.attributes_name["id"]]}"
                 )
                 continue
-            # Add a new author in the worksheet
+            # Add a new author to the worksheet
             new_author = Author(
                 self.authors_manager.generate_unique_id(), full_name, birth_year
             )
@@ -905,8 +905,8 @@ class Menu(InputMixin):
 
         Returns:
             tuple: (Author, int) if author is found, where Author is the Author object
-                and int is the row number in the worksheet.
-            None, None if user exits or author is not found.
+                and integer is the row number in the worksheet.
+            None, None if the user exits or the author is not found.
         """
         while True:
             value = self.input_str(
@@ -980,8 +980,8 @@ class Menu(InputMixin):
 
         Returns:
             tuple: (Book, int) if book is found, where Book is the Book object
-                and int is the row number in the worksheet.
-            None, None if user exits or book is not found.
+                and integer is the row number in the worksheet.
+            None, None if the user exits or the book is not found.
         """
 
         while True:
