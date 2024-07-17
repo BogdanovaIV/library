@@ -3,6 +3,7 @@ from books import Book, Books
 from mixin_classes import UniqueIDMixin, InputMixin
 from colorama import Fore
 from tabulate import tabulate
+from simple_term_menu import TerminalMenu
 
 
 class Menu(InputMixin):
@@ -27,43 +28,45 @@ class Menu(InputMixin):
     def display_menu(self):
         """Displays the main menu and handles user input."""
         while True:
-            print("\nMain Menu:")
-            print("1. Authors")
-            print("2. Books")
-            print("3. Exit")
-            choice = input("Enter your choice:\n")
-
-            if choice == "1":
+            options = ["1. Authors", "2. Books", "3. Exit"]
+            terminal_menu = TerminalMenu(options, title="\nMain Menu")
+            choice = terminal_menu.show()
+            if choice == 0:
                 self.display_authors_menu()
-            elif choice == "2":
+            elif choice == 1:
                 self.display_books_menu()
-            elif choice == "3":
+            elif choice == 2:
                 print(Fore.BLUE + "Exiting the program. Goodbye!")
                 break
             else:
-                print(Fore.RED + "Invalid choice. Please enter a valid option.")
+                print(
+                    Fore.RED +
+                    "Invalid choice. Please enter a valid option."
+                )
 
     # Authors menu
     def display_authors_menu(self):
         """Displays the 'authors' menu and handles user input."""
         while True:
-            print("\nAuthors Menu:")
-            print("1. Get all authors")
-            print("2. Add a new author")
-            print("3. Edit an author")
-            print("4. Find books by an author")
-            print("5. Back to the previous step")
-            choice = input("Enter your choice:\n")
+            options = [
+                "1. Get all authors",
+                "2. Add a new author",
+                "3. Edit an author",
+                "4. Find books by an author",
+                "5. Back to the previous step"
+            ]
+            terminal_menu = TerminalMenu(options, title="\nAuthors Menu")
+            choice = terminal_menu.show()
 
-            if choice == "1":
+            if choice == 0:
                 self.get_all_authors()
-            elif choice == "2":
+            elif choice == 1:
                 self.add_new_author()
-            elif choice == "3":
+            elif choice == 2:
                 self.edit_author()
-            elif choice == "4":
+            elif choice == 3:
                 self.get_books_by_author()
-            elif choice == "5":
+            elif choice == 4:
                 break
             else:
                 print(Fore.RED + "Invalid choice. Please enter a valid option.")
@@ -201,23 +204,25 @@ class Menu(InputMixin):
     def display_books_menu(self):
         """Displays the books menu and handles user input."""
         while True:
-            print("\nBooks Menu:")
-            print("1. Get all books")
-            print("2. Add a new book")
-            print("3. Edit a book")
-            print("4. Find books by part of the title")
-            print("5. Back to the previous step")
-            choice = input("Enter your choice:\n")
+            options = [
+                "1. Get all books",
+                "2. Add a new book",
+                "3. Edit a book",
+                "4. Find books by part of the title",
+                "5. Back to the previous step"
+            ]
+            terminal_menu = TerminalMenu(options, title="\nBooks Menu")
+            choice = terminal_menu.show()
 
-            if choice == "1":
+            if choice == 0:
                 self.get_all_books()
-            elif choice == "2":
+            elif choice == 1:
                 self.add_new_book()
-            elif choice == "3":
+            elif choice == 2:
                 self.edit_book()
-            elif choice == "4":
+            elif choice == 3:
                 self.get_books_by_tittle()
-            elif choice == "5":
+            elif choice == 4:
                 break
             else:
                 print(

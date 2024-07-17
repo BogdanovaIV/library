@@ -1,6 +1,7 @@
 import gspread
 from google.oauth2.service_account import Credentials
 from colorama import Fore
+from simple_term_menu import TerminalMenu
 
 
 class GoogleSheetsClient:
@@ -229,14 +230,17 @@ class GoogleSheet:
             int: The index of the chosen item.
         """
         while True:
-            print(f"Choose the {text_item}:")
+            options = []
             for i, cell in enumerate(cells, start=1):
                 values_row = cell[1]
-                print(print_item_lambda(i, values_row))
+                options.append(print_item_lambda(i, values_row))
+                
+            terminal_menu = TerminalMenu(options, title=f"Choose the {text_item}")
+            choice = terminal_menu.show()
+            
             try:
-                choice = int(input("Enter your choice:\n"))
-                if 0 < choice <= len(cells):
-                    return choice - 1
+                if 0 <= choice < len(cells):
+                    return choice
 
                 raise ValueError(Fore.RED + "Please enter a valid option.")
             except ValueError as e:
