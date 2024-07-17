@@ -3,6 +3,7 @@ from authors import Authors
 from books import Books
 from menu import Menu
 from colorama import Fore
+import os
 
 
 CREDS = GoogleSheetsClient.get_creds("creds.json")
@@ -20,6 +21,9 @@ def main():
 
     # Initialize the Books manager
     books_manager = Books(client.open_worksheet(sheet_name, "books"))
+
+    # Clear the terminal
+    os.system('cls' if os.name == 'nt' else 'clear') 
 
     # Create a Menu instance
     print(
