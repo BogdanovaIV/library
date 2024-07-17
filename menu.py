@@ -413,7 +413,7 @@ class Menu(InputMixin):
 
         while True:
             value = self.input_str(
-                "Enter the title or ID of the book or 'Exit' to go back: "
+                "Enter the title or ID of the book or 'Exit' to go back:\n"
             )
             if value is None:
                 return None, None

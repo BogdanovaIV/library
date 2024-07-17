@@ -71,7 +71,7 @@ To choose one of the options, the user has to input the number of the option and
 __The Books' Menu__
 
 The Books' menu has five options.
-![The Books' Menu](documentation/features/authors-menu.png)
+![The Books' Menu](documentation/features/books-menu.png)
 To choose one of the options, the user has to input the number of the option and press Enter.
 - 1. Get all books - displays all saved books. The data is displayed in the format "ID (book) - the title - the full name of the author - shelf(the number of the shelf on which the book is stored)"
      ![Get all books](documentation/features/get-all-books.png)
