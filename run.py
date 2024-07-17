@@ -37,4 +37,5 @@ def main():
     menu.display_menu()
 
 
-main()
+if __name__ == '__main__':
+    main()
