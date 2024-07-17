@@ -58,3 +58,24 @@ The all options were tested and works correctly.
 | Input the part of the title of the book | Input the part of the title of the book | The user can input the part of the title of the book. The user can input "Exit" to return to the Books' menu. | Yes | Yes | - |
 | Displays books | Displays books | The system displays books in the format "ID (book) - the title - the full name of the author - shelf(the number of the shelf on which the book is stored)".  | Yes | Yes | - |
 | The option "Back to the previous step" | Input 5 to select the option | The system returns to the Main menu | Yes | Yes | - |
+## Bugs
+
+__Solved Bugs__
+
+ - Wrong searching books by the author and a part of the title
+   Solution: Add two types of selection: any and all to "Books.get_all_books_with_selection"
+   ![get-all-books-with-selection](documentation/bug-get-all-books-with-selection.png)
+ - Dysplay tables with information about authors and books without headings.
+   Solution: add to classes "Authors" and "Books" functions "get_headers_for_table".
+   ![get-headers-for-table](documentation/bug-get-headers-for-table.png)
+ - The user cannot edit the book without inputing "new title".
+   Solution: Add the option if the user inputs an empty string, the system does not change title  
+   
+__Unsolved Bugs__
+
+ - None.
+
+__Mistakes__
+
+ - Using different formats of 'Commit' comments.
+ - Some grammar and spelling mistakes.
