@@ -156,24 +156,30 @@ The steps to deploy are as follows:
      - Select "Create new app" from the dropdown menu.
      - Enter a name for your app and select your region.
      - Click the "Create app" button.
+     ![Heroku - create a new application](documentation/heroku/heroku-create-app.png)
 - 3. Set Up Environment Variables
      - Go to the "Settings" tab of your Heroku app.
      - Click "Reveal Config Vars".
      - Add any necessary environment variables: CREDS equal JSON and PORT equal 8000
+      ![Heroku - config var](documentation/heroku/heroku-config-var.png)
 - 4. Buildpacks
      - Click "Add buildpack"
      - Chose python and nodejs
+     ![Heroku - buildpacks](documentation/heroku/heroku-buildpacks.png)
 - 5. Connect to GitHub
      - In the "Deploy" tab, go to the "Deployment method" section.
      - Click on the "GitHub" button to connect your GitHub account to Heroku.
      - Once connected, search for the repository you want to deploy.
      - Click the "Connect" button next to your repository.
+     ![Heroku - github](documentation/heroku/heroku-github.png)
 - 6. Automatic Deploys (Optional)
      - In the "Automatic deploys" section, you can enable automatic deploys for a specific branch (typically main or master).
      - Click "Enable Automatic Deploys" if you want Heroku to automatically deploy every time you push changes to the specified branch.
+     ![Heroku - automatic deploys](documentation/heroku/heroku-automatic-deploys.png)
 - 7. Manual Deploy
      - In the "Manual deploy" section, select the branch you want to deploy and click "Deploy Branch".
      - Heroku will start the deployment process. You can view the build progress in the activity feed.
+     ![Heroku - manual deploys](documentation/heroku/heroku-manual-deploys.png)
 
 ## Local Deployment
 
