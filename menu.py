@@ -210,9 +210,17 @@ class Menu(InputMixin):
                 self.books_manager.attributes_name["author_id"]: author.id,
             }
         )
+        table = [self.books_manager.get_headers_for_table()]
+
         if books:
             for book in books:
-                print(book.to_fstring(author.full_name))
+                table.append([
+                    book.id,
+                    book.title,
+                    author.full_name,
+                    book.shelf_number
+                ])
+            print(Fore.YELLOW + tabulate(table))
         else:
             print(Fore.RED + f"No books found by {author.full_name}")
 
