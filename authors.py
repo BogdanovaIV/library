@@ -1,6 +1,6 @@
 from googlesheets import GoogleSheetsClient, GoogleSheet
 from mixin_classes import UniqueIDMixin, InputMixin
-
+from colorama import Fore
 
 class Author:
     """
@@ -140,7 +140,7 @@ class Authors(UniqueIDMixin, GoogleSheet):
             )
 
         if author:
-            print(f"The author is {author.to_fstring()}")
+            print(Fore.GREEN + f"The author is {author.to_fstring()}")
 
         return (
             author,

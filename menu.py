@@ -1,7 +1,7 @@
 from authors import Author, Authors
 from books import Book, Books
 from mixin_classes import UniqueIDMixin, InputMixin
-
+from colorama import Fore
 
 class Menu(InputMixin):
     """
@@ -36,10 +36,10 @@ class Menu(InputMixin):
             elif choice == "2":
                 self.display_books_menu()
             elif choice == "3":
-                print("Exiting the program. Goodbye!")
+                print(Fore.BLUE + "Exiting the program. Goodbye!")
                 break
             else:
-                print("Invalid choice. Please enter a valid option.")
+                print(Fore.RED + "Invalid choice. Please enter a valid option.")
 
     # Authors menu
     def display_authors_menu(self):
@@ -64,7 +64,7 @@ class Menu(InputMixin):
             elif choice == "5":
                 break
             else:
-                print("Invalid choice. Please enter a valid option.")
+                print(Fore.RED + "Invalid choice. Please enter a valid option.")
 
     def get_all_authors(self):
         """Displays all authors."""
@@ -100,6 +100,7 @@ class Menu(InputMixin):
             )
             if record:
                 print(
+                    Fore.RED +
                     f"The database contains the author {full_name} -"
                     f"{birth_year}. ID is "
                     f"{record[self.authors_manager.attributes_name["id"]]}"
@@ -114,11 +115,13 @@ class Menu(InputMixin):
             # Success
             if self.authors_manager.append_row(new_author.to_list()):
                 print(
+                    Fore.GREEN +
                     f"Author {new_author.to_fstring()} added successfully."
                 )
                 break
             # Failed
             print(
+                Fore.RED +
                 f"Failed to add author {new_author.to_fstring()}."
             )
 
@@ -160,11 +163,13 @@ class Menu(InputMixin):
             # Success
             if self.authors_manager.edit_author(row, author):
                 print(
+                    Fore.GREEN +
                     f"The author {author.to_fstring()} edited successfully."
                 )
                 break
             # Failed
             print(
+                Fore.RED +
                 f"Failed to edit the author {author.to_fstring()}."
             )
 
@@ -185,7 +190,7 @@ class Menu(InputMixin):
             for book in books:
                 print(book.to_fstring(author.full_name))
         else:
-            print(f"No books found by {author.full_name}")
+            print(Fore.RED + f"No books found by {author.full_name}")
 
     # Books menu
     def display_books_menu(self):
@@ -210,7 +215,10 @@ class Menu(InputMixin):
             elif choice == "5":
                 break
             else:
-                print("Invalid choice. Please enter a valid option.")
+                print(
+                    Fore.RED +
+                    "Invalid choice. Please enter a valid option."
+                )
 
     def print_books(self, books):
         """
@@ -243,7 +251,7 @@ class Menu(InputMixin):
             "Enter the title:\n"
         )
         if not title:
-            print("The title cannot be empty.")
+            print(Fore.RED + "The title cannot be empty.")
         else:
             books = self.books_manager.get_all_books_with_selection(
                 {
@@ -255,7 +263,7 @@ class Menu(InputMixin):
             if books:
                 self.print_books(books)
             else:
-                print("No books found.")
+                print(Fore.RED + "No books found.")
 
     def get_author_and_row(self):
         """
@@ -278,7 +286,7 @@ class Menu(InputMixin):
             if author:
                 return author, row_author
             else:
-                print(f"Author '{value}' not found.")
+                print(Fore.RED + f"Author '{value}' not found.")
 
     def add_new_book(self):
         """Adds a new book."""
@@ -303,6 +311,7 @@ class Menu(InputMixin):
             )
             if record:
                 print(
+                    Fore.RED +
                     f"The database contains the book {title} - "
                     f"{author.full_name}. ID is "
                     f"{record[self.books_manager.attributes_name["id"]]}"
@@ -327,6 +336,7 @@ class Menu(InputMixin):
             # Success
             if self.books_manager.append_row(new_book.to_list()):
                 print(
+                    Fore.GREEN + 
                     f"The book {new_book.to_fstring(author.full_name)} added "
                     f"successfully."
                 )
@@ -334,6 +344,7 @@ class Menu(InputMixin):
             else:
                 # Failed
                 print(
+                    Fore.RED +
                     f"Failed to add the book "
                     f"{new_book.to_fstring(author.full_name)}."
                 )
@@ -366,7 +377,10 @@ class Menu(InputMixin):
             if book:
                 return book, row
             else:
-                print(f"The book {value} - {author.full_name} is not found")
+                print(
+                    Fore.RED +
+                    f"The book {value} - {author.full_name} is not found"
+                )
 
     def edit_book(self):
         """Edits a book."""
@@ -403,6 +417,7 @@ class Menu(InputMixin):
             # Success
             if self.books_manager.update_row(row, book.to_list()):
                 print(
+                    Fore.GREEN +
                     f"The book {book.to_fstring(author.full_name)} "
                     f"edited successfully."
                 )
@@ -410,6 +425,7 @@ class Menu(InputMixin):
             # Failed
             else:
                 print(
+                    Fore.RED +
                     f"Failed to edit the book "
                     f"{book.to_fstring(author.full_name)}."
                 )

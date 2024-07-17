@@ -1,5 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
+from colorama import Fore
 
 
 class GoogleSheetsClient:
@@ -111,10 +112,10 @@ class GoogleSheet:
                 range_name=f"A{row}:Z{row}",
                 values=[values_list]
                               )
-            print("Row updated successfully.")
+            print(Fore.GREEN + "Row updated successfully.")
             return True
         except Exception as e:
-            print(f"Failed to update row: {e}")
+            print(Fore.RED + f"Failed to update row: {e}")
             return False
 
     def append_row(self, values):
@@ -129,10 +130,10 @@ class GoogleSheet:
         """
         try:
             self.sheet.append_row(values)
-            print("Row appended successfully.")
+            print(Fore.GREEN + "Row appended successfully.")
             return True
         except gspread.exceptions.APIError as e:
-            print(f"Failed to append row: {e}")
+            print(Fore.RED + f"Failed to append row: {e}")
             return False
 
     def find_cells_contain_value(self, attributes_any, attributes_all):
@@ -196,7 +197,7 @@ class GoogleSheet:
         cells = self.find_cells_contain_value(attributes_any, attributes_all)
 
         if not cells:
-            print(f"The {text_item} is not found.\n")
+            print(Fore.RED + f"The {text_item} is not found.\n")
             return None, -1
 
         if len(cells) == 1:
@@ -237,9 +238,9 @@ class GoogleSheet:
                 if 0 < choice <= len(cells):
                     return choice - 1
 
-                raise ValueError("Please enter a valid option.")
+                raise ValueError(Fore.RED + "Please enter a valid option.")
             except ValueError as e:
-                print(f"Invalid data: {e}, please try again.\n")
+                print(Fore.RED + f"Invalid data: {e}, please try again.\n")
 
     def check_duplicate_data(self, attributes):
         """

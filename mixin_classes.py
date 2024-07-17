@@ -1,4 +1,8 @@
 import uuid
+from colorama import Fore, init
+
+
+init(autoreset=True)
 
 
 class UniqueIDMixin:
@@ -50,7 +54,11 @@ class InputMixin:
                     value = int(value)
 
             except ValueError as e:
-                print(f"Invalid data: {e}, please try again.\n")
+                print(
+                    Fore.RED +
+                    f"Invalid data: it can be an integer without spaces, please "
+                    f"try again.\n"
+                )
             else:
                 break
 
@@ -78,7 +86,7 @@ class InputMixin:
                     value = None
 
             except ValueError as e:
-                print(f"Invalid data: {e}, please try again.\n")
+                print(Fore.RED + f"Invalid data: {e}, please try again.\n")
             else:
                 break
 

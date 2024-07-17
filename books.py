@@ -1,6 +1,6 @@
 from googlesheets import GoogleSheetsClient, GoogleSheet
 from mixin_classes import UniqueIDMixin, InputMixin
-
+from colorama import Fore
 
 class Book:
     """
@@ -183,7 +183,7 @@ class Books(UniqueIDMixin, GoogleSheet):
             )
 
         if book:
-            print(f"The book is {book.to_fstring(author_full_name)}")
+            print(Fore.GREEN + f"The book is {book.to_fstring(author_full_name)}")
         return (
             book,
             index,
