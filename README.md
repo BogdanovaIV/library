@@ -104,20 +104,42 @@ To choose one of the options, the user has to input the number of the option and
 
 ### Programming Language
 - [Python 3.12.2](https://www.python.org/downloads/release/python-3122/): A versatile and widely-used programming language known for its readability and extensive libraries. This project is primarily built using Python due to its powerful data manipulation capabilities and ease of integration with other technologies.
+
 ### Libraries and Frameworks
 - [gspread](https://docs.gspread.org/en/v6.0.0/): A Python library that provides easy access to Google Sheets API. It allows for seamless reading, writing, and updating of Google Sheets.
 - [google-auth](https://google-auth.readthedocs.io/en/master/): A library to authenticate and authorize Google APIs. Specifically, google.oauth2.service_account is used to handle service account credentials for secure access to Google Sheets.
 - [uuid](https://docs.python.org/3/library/uuid.html): A Python library used to generate unique identifiers for records, ensuring that each entry in the Google Sheets has a unique ID.
+- [colorama](https://pypi.org/project/colorama/): A library for colored terminal text, enhancing the user interface for command-line interactions.
+- [simple_term_menu](https://pypi.org/project/simple-term-menu/): A library for creating simple and interactive terminal menus, improving the command-line user experience.
+- [tabulate](https://pypi.org/project/tabulate/): A Python library used to format tabular data in plain text, providing an easy way to display data in a structured format.
+
 ### Google Cloud Platform
 - [Google Sheets API](https://developers.google.com/sheets/api/quickstart/python?hl=en): An API provided by Google that allows interaction with Google Sheets. This project leverages the API to read, write, and manage data stored in Google Sheets.
 - [Google Drive API](https://developers.google.com/drive/api/quickstart/python?hl=en): Used for additional operations related to file management in Google Drive, complementing the Google Sheets API functionalities.
+
 ### Google Cloud Platform
 - [VS Code](https://code.visualstudio.com/): Popular Integrated Development Environments (IDEs) that provide robust support for Python development, including code completion, debugging, and version control integration.
 - [Github](https://github.com/) - A version control system used to manage code changes and collaborate with other developers.
+
 ### Authentication and Security
 - [OAuth 2.0](https://oauth.net/2/): An authorization framework used to obtain limited access to user accounts on an HTTP service. This project uses OAuth 2.0 to securely access Google Sheets data through a service account.
+
 ### Data Formats
 - [JSON](https://www.json.org/json-en.html): Used for configuration and data exchange. The credentials for the Google service account are stored in a JSON file, and JSON is also used for structured data interchange.
+
+### Object-Oriented Programming
+Object-Oriented Programming (OOP) is a programming paradigm that uses objects and classes to structure software in a way that is both modular and reusable. 
+
+#### Classes Used in This Project
+- GoogleSheetsClient - A client class to handle authentication and connection to Google Sheets.
+- GoogleSheet - A class to handle operations on a specific Google Sheet worksheet.
+- UniqueIDMixin - A mixin class that generates unique IDs.
+- InputMixin - A mixin class that calls input which checks the value.
+- Menu - A class representing a menu-driven interface.
+- Author - A class representing an individual author.
+- Authors - A class managing a collection of authors in a Google Sheets document.
+- Book - A class representing a book.
+- Books - A class managing a collection of books in a Google Sheets document.
 
 ## Testing
 
