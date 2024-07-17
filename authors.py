@@ -2,6 +2,7 @@ from googlesheets import GoogleSheetsClient, GoogleSheet
 from mixin_classes import UniqueIDMixin, InputMixin
 from colorama import Fore
 
+
 class Author:
     """
     Represents an individual author.
@@ -67,6 +68,20 @@ class Authors(UniqueIDMixin, GoogleSheet):
         }
 
         super().__init__(sheet)
+
+    def get_headers_for_table(self):
+        """
+        Return headers of columns for the table
+
+        Returns:
+            list: A list of headers.
+        """
+        
+        return [
+            self.attributes_name["id"],
+            self.attributes_name["full_name"],
+            self.attributes_name["birth_year"]
+        ]
 
     def get_all_authors(self):
         """

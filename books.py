@@ -80,6 +80,21 @@ class Books(UniqueIDMixin, GoogleSheet):
 
         super().__init__(sheet)
 
+    def get_headers_for_table(self):
+        """
+        Return headers of columns for the table
+
+        Returns:
+            list: A list of headers.
+        """
+        
+        return [
+            self.attributes_name["id"],
+            self.attributes_name["title"],
+            "AUTHOR",
+            self.attributes_name["shelf_number"]
+        ]
+
     def get_all_books(self):
         """
         Retrieves all books from the worksheet.

@@ -2,6 +2,8 @@ from authors import Author, Authors
 from books import Book, Books
 from mixin_classes import UniqueIDMixin, InputMixin
 from colorama import Fore
+from tabulate import tabulate
+
 
 class Menu(InputMixin):
     """
@@ -69,8 +71,11 @@ class Menu(InputMixin):
     def get_all_authors(self):
         """Displays all authors."""
         authors = self.authors_manager.get_all_authors()
+        table = [self.authors_manager.get_headers_for_table()]
         for author in authors:
-            print(author.to_fstring())
+            table.append(author.to_list())
+
+        print(Fore.BLUE + tabulate(table))
 
     def add_new_author(self):
         """Adds a new author."""
@@ -229,15 +234,17 @@ class Menu(InputMixin):
 
         """
         authors = self.authors_manager.get_all_authors_dictionary()
+        table = [self.books_manager.get_headers_for_table()]
+ 
         for book in books:
             try:
                 author_full_name = authors[book.author_id]
             except KeyError as e:
                 author_full_name = "Invalid author's ID"
             finally:
-                print(
-                    book.to_fstring(author_full_name)
-                )
+                table.append([book.id, book.title, author_full_name, book.shelf_number])
+        
+        print(Fore.BLUE + tabulate(table))
 
     def get_all_books(self):
         """Displays all books."""
