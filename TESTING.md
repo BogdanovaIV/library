@@ -58,6 +58,21 @@ The all options were tested and works correctly.
 | Input the part of the title of the book | Input the part of the title of the book | The user can input the part of the title of the book. The user can input "Exit" to return to the Books' menu. | Yes | Yes | - |
 | Displays books | Displays books | The system displays books in the format "ID (book) - the title - the full name of the author - shelf(the number of the shelf on which the book is stored)".  | Yes | Yes | - |
 | The option "Back to the previous step" | Input 5 to select the option | The system returns to the Main menu | Yes | Yes | - |
+
+## Validator
+Quality checking was tested by [PEP8](https://pep8ci.herokuapp.com/#).
+All files were checked and did not have errors and warnings.
+- authors.py
+ ![validator - authors.py](documentation/validator/validator-authors.png)
+ - books.py
+ ![validator - authors.py](documentation/validator/validator-books.png)
+ - googlesheets.py
+ ![validator - authors.py](documentation/validator/validator-googlesheets.png)
+ - menu.py
+ ![validator - authors.py](documentation/validator/validator-menu.png)
+ - run.py
+ ![validator - authors.py](documentation/validator/validator-run.png)
+
 ## Bugs
 
 __Solved Bugs__
