@@ -34,11 +34,11 @@ class Menu(InputMixin):
             choice = terminal_menu.show()
             if choice == 0:
                 # Clear the terminal
-                os.system('cls' if os.name == 'nt' else 'clear') 
+                os.system('cls' if os.name == 'nt' else 'clear')
                 self.display_authors_menu()
             elif choice == 1:
                 # Clear the terminal
-                os.system('cls' if os.name == 'nt' else 'clear') 
+                os.system('cls' if os.name == 'nt' else 'clear')
                 self.display_books_menu()
             elif choice == 2:
                 print(Fore.YELLOW + "Exiting the program. Goodbye!")
@@ -65,24 +65,27 @@ class Menu(InputMixin):
 
             if choice == 0:
                 # Clear the terminal
-                os.system('cls' if os.name == 'nt' else 'clear') 
+                os.system('cls' if os.name == 'nt' else 'clear')
                 self.get_all_authors()
             elif choice == 1:
                 # Clear the terminal
-                os.system('cls' if os.name == 'nt' else 'clear') 
+                os.system('cls' if os.name == 'nt' else 'clear')
                 self.add_new_author()
             elif choice == 2:
                 # Clear the terminal
-                os.system('cls' if os.name == 'nt' else 'clear') 
+                os.system('cls' if os.name == 'nt' else 'clear')
                 self.edit_author()
             elif choice == 3:
                 # Clear the terminal
-                os.system('cls' if os.name == 'nt' else 'clear') 
+                os.system('cls' if os.name == 'nt' else 'clear')
                 self.get_books_by_author()
             elif choice == 4:
                 break
             else:
-                print(Fore.RED + "Invalid choice. Please enter a valid option.")
+                print(
+                    Fore.RED +
+                    "Invalid choice. Please enter a valid option."
+                )
 
     def get_all_authors(self):
         """Displays all authors."""
@@ -229,19 +232,19 @@ class Menu(InputMixin):
 
             if choice == 0:
                 # Clear the terminal
-                os.system('cls' if os.name == 'nt' else 'clear') 
+                os.system('cls' if os.name == 'nt' else 'clear')
                 self.get_all_books()
             elif choice == 1:
                 # Clear the terminal
-                os.system('cls' if os.name == 'nt' else 'clear') 
+                os.system('cls' if os.name == 'nt' else 'clear')
                 self.add_new_book()
             elif choice == 2:
                 # Clear the terminal
-                os.system('cls' if os.name == 'nt' else 'clear') 
+                os.system('cls' if os.name == 'nt' else 'clear')
                 self.edit_book()
             elif choice == 3:
                 # Clear the terminal
-                os.system('cls' if os.name == 'nt' else 'clear') 
+                os.system('cls' if os.name == 'nt' else 'clear')
                 self.get_books_by_tittle()
             elif choice == 4:
                 break
@@ -261,15 +264,20 @@ class Menu(InputMixin):
         """
         authors = self.authors_manager.get_all_authors_dictionary()
         table = [self.books_manager.get_headers_for_table()]
- 
+
         for book in books:
             try:
                 author_full_name = authors[book.author_id]
             except KeyError as e:
                 author_full_name = "Invalid author's ID"
             finally:
-                table.append([book.id, book.title, author_full_name, book.shelf_number])
-        
+                table.append([
+                    book.id,
+                    book.title,
+                    author_full_name,
+                    book.shelf_number
+                ])
+
         print(Fore.YELLOW + tabulate(table))
 
     def get_all_books(self):
@@ -369,7 +377,7 @@ class Menu(InputMixin):
             # Success
             if self.books_manager.append_row(new_book.to_list()):
                 print(
-                    Fore.GREEN + 
+                    Fore.GREEN +
                     f"The book {new_book.to_fstring(author.full_name)} added "
                     f"successfully."
                 )

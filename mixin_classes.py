@@ -56,8 +56,8 @@ class InputMixin:
             except ValueError as e:
                 print(
                     Fore.RED +
-                    f"Invalid data: it can be an integer without spaces, please "
-                    f"try again.\n"
+                    f"Invalid data: it can be an integer without spaces, "
+                    f"please try again.\n"
                 )
             else:
                 break

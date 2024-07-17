@@ -23,7 +23,7 @@ def main():
     books_manager = Books(client.open_worksheet(sheet_name, "books"))
 
     # Clear the terminal
-    os.system('cls' if os.name == 'nt' else 'clear') 
+    os.system('cls' if os.name == 'nt' else 'clear')
 
     # Create a Menu instance
     print(

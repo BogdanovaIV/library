@@ -2,6 +2,7 @@ from googlesheets import GoogleSheetsClient, GoogleSheet
 from mixin_classes import UniqueIDMixin, InputMixin
 from colorama import Fore
 
+
 class Book:
     """
     Represents a book.
@@ -87,7 +88,7 @@ class Books(UniqueIDMixin, GoogleSheet):
         Returns:
             list: A list of headers.
         """
-        
+
         return [
             self.attributes_name["id"],
             self.attributes_name["title"],
@@ -198,7 +199,10 @@ class Books(UniqueIDMixin, GoogleSheet):
             )
 
         if book:
-            print(Fore.GREEN + f"The book is {book.to_fstring(author_full_name)}")
+            print(
+                Fore.GREEN +
+                f"The book is {book.to_fstring(author_full_name)}"
+            )
         return (
             book,
             index,

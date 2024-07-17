@@ -76,7 +76,7 @@ class Authors(UniqueIDMixin, GoogleSheet):
         Returns:
             list: A list of headers.
         """
-        
+
         return [
             self.attributes_name["id"],
             self.attributes_name["full_name"],

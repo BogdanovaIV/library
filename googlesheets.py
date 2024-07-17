@@ -234,10 +234,13 @@ class GoogleSheet:
             for i, cell in enumerate(cells, start=1):
                 values_row = cell[1]
                 options.append(print_item_lambda(i, values_row))
-                
-            terminal_menu = TerminalMenu(options, title=f"Choose the {text_item}")
+
+            terminal_menu = TerminalMenu(
+                options,
+                title=f"Choose the {text_item}"
+            )
             choice = terminal_menu.show()
-            
+
             try:
                 if 0 <= choice < len(cells):
                     return choice
