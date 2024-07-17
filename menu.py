@@ -4,6 +4,7 @@ from mixin_classes import UniqueIDMixin, InputMixin
 from colorama import Fore
 from tabulate import tabulate
 from simple_term_menu import TerminalMenu
+import os
 
 
 class Menu(InputMixin):
@@ -32,8 +33,12 @@ class Menu(InputMixin):
             terminal_menu = TerminalMenu(options, title="\nMain Menu")
             choice = terminal_menu.show()
             if choice == 0:
+                # Clear the terminal
+                os.system('cls' if os.name == 'nt' else 'clear') 
                 self.display_authors_menu()
             elif choice == 1:
+                # Clear the terminal
+                os.system('cls' if os.name == 'nt' else 'clear') 
                 self.display_books_menu()
             elif choice == 2:
                 print(Fore.BLUE + "Exiting the program. Goodbye!")
@@ -59,12 +64,20 @@ class Menu(InputMixin):
             choice = terminal_menu.show()
 
             if choice == 0:
+                # Clear the terminal
+                os.system('cls' if os.name == 'nt' else 'clear') 
                 self.get_all_authors()
             elif choice == 1:
+                # Clear the terminal
+                os.system('cls' if os.name == 'nt' else 'clear') 
                 self.add_new_author()
             elif choice == 2:
+                # Clear the terminal
+                os.system('cls' if os.name == 'nt' else 'clear') 
                 self.edit_author()
             elif choice == 3:
+                # Clear the terminal
+                os.system('cls' if os.name == 'nt' else 'clear') 
                 self.get_books_by_author()
             elif choice == 4:
                 break
@@ -215,12 +228,20 @@ class Menu(InputMixin):
             choice = terminal_menu.show()
 
             if choice == 0:
+                # Clear the terminal
+                os.system('cls' if os.name == 'nt' else 'clear') 
                 self.get_all_books()
             elif choice == 1:
+                # Clear the terminal
+                os.system('cls' if os.name == 'nt' else 'clear') 
                 self.add_new_book()
             elif choice == 2:
+                # Clear the terminal
+                os.system('cls' if os.name == 'nt' else 'clear') 
                 self.edit_book()
             elif choice == 3:
+                # Clear the terminal
+                os.system('cls' if os.name == 'nt' else 'clear') 
                 self.get_books_by_tittle()
             elif choice == 4:
                 break
