@@ -41,7 +41,7 @@ class Menu(InputMixin):
                 os.system('cls' if os.name == 'nt' else 'clear') 
                 self.display_books_menu()
             elif choice == 2:
-                print(Fore.BLUE + "Exiting the program. Goodbye!")
+                print(Fore.YELLOW + "Exiting the program. Goodbye!")
                 break
             else:
                 print(
@@ -91,7 +91,7 @@ class Menu(InputMixin):
         for author in authors:
             table.append(author.to_list())
 
-        print(Fore.BLUE + tabulate(table))
+        print(Fore.YELLOW + tabulate(table))
 
     def add_new_author(self):
         """Adds a new author."""
@@ -270,7 +270,7 @@ class Menu(InputMixin):
             finally:
                 table.append([book.id, book.title, author_full_name, book.shelf_number])
         
-        print(Fore.BLUE + tabulate(table))
+        print(Fore.YELLOW + tabulate(table))
 
     def get_all_books(self):
         """Displays all books."""

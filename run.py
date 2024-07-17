@@ -27,7 +27,7 @@ def main():
 
     # Create a Menu instance
     print(
-        Fore.BLUE +
+        Fore.YELLOW +
         f"Welcome to Library Data Automation!\n"
         f"This application stores information about authors and books. "
         f"It allows the user to get the list of authors and books, "
