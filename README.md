@@ -170,18 +170,17 @@ Before running the application locally, ensure you have the following installed:
 - Run the Application. Run your main application script.
   python run.py
 
-  ## Future Improvements
+## Future Improvements
 
-  - Delete items from the database.
-  - Save information about people who take the book.
-  - Add more detailed information about books like descriptions, reviews, etc.
+- Delete items from the database.
+- Save information about people who take the book.
+- Add more detailed information about books like descriptions, reviews, etc.
 
 ## Credits 
 
 ### Content 
 
 - Information about authors and books was taken from free sources like Wikipedia
-
 
 ### Acknowledgments
 

@@ -159,7 +159,13 @@ class GoogleSheet:
                 matching_records.append([row, record])
         return matching_records
 
-    def find_item(self, attributes_any, attributes_all, text_item, print_item_lambda):
+    def find_item(
+        self,
+        attributes_any,
+        attributes_all,
+        text_item,
+        print_item_lambda
+    ):
         """
         Find an item by values that have to be equal.
 
