@@ -82,7 +82,7 @@ class InputMixin:
         value = None
         while True:
             try:
-                value = input(text_message) # Prompt the user for input
+                value = input(text_message).strip() # Prompt the user for input
                 if not empty_str_avaliable and not value:
                     # Raise error if empty string not allowed and
                     # the input is empty
