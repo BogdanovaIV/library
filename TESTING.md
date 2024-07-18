@@ -62,16 +62,20 @@ The all options were tested and works correctly.
 ## Validator
 Quality checking was tested by [PEP8](https://pep8ci.herokuapp.com/#).
 All files were checked and did not have errors and warnings.
+Notes: Each python files contains  a newline at the end of the file
 - authors.py
  ![validator - authors.py](documentation/validator/validator-authors.png)
  - books.py
- ![validator - authors.py](documentation/validator/validator-books.png)
- - googlesheets.py
- ![validator - authors.py](documentation/validator/validator-googlesheets.png)
+ ![validator - books.py](documentation/validator/validator-books.png)
+ - googlesheets_setup.py
+ ![validator - googlesheets_setup.py](documentation/validator/validator-googlesheets.png)
  - menu.py
- ![validator - authors.py](documentation/validator/validator-menu.png)
+ ![validator - menu.py](documentation/validator/validator-menu.png)
+ - mixin_classes.py
+ ![validator - menu.py](documentation/validator/validator-menu.png)
  - run.py
- ![validator - authors.py](documentation/validator/validator-run.png)
+ - run.py
+ ![validator - run.py](documentation/validator/validator-run.png)
 
 ## Bugs
 

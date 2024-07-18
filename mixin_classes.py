@@ -46,13 +46,16 @@ class InputMixin:
         value = None
         while True:
             try:
-                value = input(text_message) # Prompt the user for input
-
-                if value.lower() == "exit": # Check if the user wants to exit
-                    value = None # Set value to None to exit input loop
+                # Prompt the user for input
+                value = input(text_message)
+                # Check if the user wants to exit
+                if value.lower() == "exit":
+                    # Set a value to None to exit input loop
+                    value = None
                 else:
-                    value = int(value) # Convert the input to integer
-                    
+                    # Convert the input to an integer
+                    value = int(value)
+
                 if value <= 0:
                     raise ValueError("Value cannot be negative")
             except ValueError as e:
@@ -62,19 +65,25 @@ class InputMixin:
                     f"spaces, please try again.\n"
                 )
             else:
-                break # Break out of input loop if the input is valid
+                # Break out of input loop if the input is valid
+                break
 
         return value
 
     @staticmethod
-    def input_str(text_message, empty_str_avaliable=False, exit_str_avaliable=False):
+    def input_str(
+        text_message,
+        empty_str_avaliable=False,
+        exit_str_avaliable=False
+    ):
         """
         Input the value which is a string.
 
         Args:
             text_message (str): The message is sent to the user.
             empty_str_avaliable (boolean): Allow to return an empty string.
-            exit_str_avaliable (boolean): Allow to return a string equal "exit".        
+            exit_str_avaliable (boolean): Allow to return a string
+            equal "exit".
 
         Returns:
             string or None: The value inputted by the user.
@@ -82,18 +91,21 @@ class InputMixin:
         value = None
         while True:
             try:
-                value = input(text_message).strip() # Prompt the user for input
+                # Prompt the user for input
+                value = input(text_message).strip()
                 if not empty_str_avaliable and not value:
                     # Raise error if empty string not allowed and
                     # the input is empty
                     raise ValueError("Value cannot be empty")
                 elif not exit_str_avaliable and value.lower() == "exit":
-                    value = None # Set value to None to exit input loop
+                    # Set a value to None to exit input loop
+                    value = None
 
             except ValueError as e:
                 # Print error message in red for invalid input
                 print(Fore.RED + f"Invalid data: {e}, please try again.\n")
             else:
-                break # Break out of input loop if the input is valid
+                # Break out of input loop if the input is valid
+                break
 
         return value

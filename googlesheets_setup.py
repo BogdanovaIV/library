@@ -162,12 +162,14 @@ class GoogleSheet:
                 value.lower() in record.get(attr).lower()
                 for attr, value in attributes_all.items()
             ):
-            # Check if the record matches any of the attributes
-            # in attributes_any
-            # Check if the record matches all of the attributes
-            # in attributes_all
-            # If both conditions are met, append the record
-            # to matching_records
+                """
+                Check if the record matches any of the attributes
+                in attributes_any
+                Check if the record matches all of the attributes
+                in attributes_all
+                If both conditions are met, append the record
+                to matching_records
+                """
                 matching_records.append([row, record])
         return matching_records
 
@@ -253,7 +255,8 @@ class GoogleSheet:
             try:
                 # Check if the chosen option is valid
                 if 0 <= choice < len(cells):
-                    return choice # Return the chosen option's index
+                    # Return the chosen option's index
+                    return choice
                 # Raise an error if the choice is not valid
                 raise ValueError(Fore.RED + "Please enter a valid option.")
             except ValueError as e:
@@ -278,5 +281,7 @@ class GoogleSheet:
                 record.get(attr) == value for attr,
                 value in attributes.items()
             ):
-                return record # Return the record if a duplicate is found
-        return None # Return None if no duplicate is found
+                # Return the record if a duplicate is found
+                return record
+        # Return None if no duplicate is found
+        return None

@@ -104,7 +104,8 @@ class Menu(InputMixin):
                 "Enter the full name or 'Exit' to back to the previous step:\n"
             )
             if full_name is None:
-                break # Exit if user chooses to
+                # Exit if the user chooses to
+                break
             # Input the birth year
             birth_year = self.input_int(
                 "Enter the birth year or 'Exit' to back to the previous"
@@ -112,7 +113,8 @@ class Menu(InputMixin):
             )
 
             if birth_year is None:
-                break # Exit if the user chooses to
+                # Exit if the user chooses to
+                break
             # Check for duplicates
             record = self.authors_manager.check_duplicate_data(
                 {
@@ -130,7 +132,8 @@ class Menu(InputMixin):
                     f"{birth_year}. ID is "
                     f"{record[self.authors_manager.attributes_name["id"]]}"
                 )
-                continue # Continue to prompt for new author information
+                # Continue to prompt for new author information
+                continue
             # Add a new author to the worksheet
             new_author = Author(
                 self.authors_manager.generate_unique_id(),
@@ -143,7 +146,8 @@ class Menu(InputMixin):
                     Fore.GREEN +
                     f"Author {new_author.to_fstring()} added successfully."
                 )
-                break # Exit the loop after successfully adding the author
+                # Exit the loop after successfully adding the author
+                break
             # If adding the author failed
             print(
                 Fore.RED +
@@ -159,12 +163,14 @@ class Menu(InputMixin):
                 "previous step:\n"
             )
             if value is None:
-                break # Exit if the user chooses to
+                # Exit if the user chooses to
+                break
             # Find the author by the full name or ID
             [author, row] = self.authors_manager.find_author(value)
 
             if author is None:
-                continue # Continue to prompt for valid author information
+                # Continue to prompt for valid author information
+                continue
             # Input new full name
             new_full_name = self.input_str(
                 "Enter the new full name or empty string not to change the "
@@ -172,7 +178,8 @@ class Menu(InputMixin):
                 True,
             )
             if new_full_name is None:
-                break # Exit if the user chooses to
+                # Exit if the user chooses to
+                break
             elif new_full_name:
                 # If a new full name is provided, update the author's full name
                 author.full_name = new_full_name
@@ -182,7 +189,8 @@ class Menu(InputMixin):
                 "step:\n"
             )
             if birth_year is None:
-                break # Exit if the user chooses to
+                # Exit if the user chooses to
+                break
             # Update the author's birth year
             author.birth_year = birth_year
             # Edit the author in the worksheet
@@ -349,7 +357,7 @@ class Menu(InputMixin):
             author, row_author = self.authors_manager.find_author(value)
             if author:
                 # Return the author and row number if found
-                return author, row_author 
+                return author, row_author
             else:
                 # Print an error message if the author not found
                 print(Fore.RED + f"Author '{value}' not found.")
@@ -360,14 +368,16 @@ class Menu(InputMixin):
             # Find the author
             author, row = self.get_author_and_row()
             if author is None:
-                return # Return if author is not found or user exits
+                # Return if the author is not found or the user exits
+                return
 
             # Input the title
             title = self.input_str(
                 "Enter the title or 'Exit' to back to the previous step:\n"
             )
             if title == "exit":
-                break # Break loop if the user enters 'exit'
+                # Break loop if the user enters 'exit'
+                break
             # Check on duplicates
             record = self.books_manager.check_duplicate_data(
                 {
@@ -392,7 +402,8 @@ class Menu(InputMixin):
             )
 
             if shelf_number is None:
-                break # Break loop if user exits
+                # Break loop if the user exits
+                break
             # Create a new book object
             new_book = Book(
                 self.books_manager.generate_unique_id(),
@@ -408,9 +419,10 @@ class Menu(InputMixin):
                     f"The book {new_book.to_fstring(author.full_name)} added "
                     f"successfully."
                 )
-                break # Break loop on successful addition
+                # Break loop on successful addition
+                break
             else:
-                # Print an error message if addition fails
+                # Print an error message if an addition fails
                 print(
                     Fore.RED +
                     f"Failed to add the book "
@@ -443,7 +455,8 @@ class Menu(InputMixin):
                 author.full_name
             )
             if book:
-                return book, row # Return book and row if found
+                # Return book and row if found
+                return book, row
             else:
                 # Print error if the book is not found
                 print(
@@ -460,7 +473,8 @@ class Menu(InputMixin):
         # Find the book to edit
         book, row = self.find_book(author)
         if book is None:
-            return # Break loop if the user enters 'exit'
+            # Break loop if the user enters 'exit'
+            return
 
         while True:
             # Input the new title
@@ -470,7 +484,8 @@ class Menu(InputMixin):
                 True
             )
             if new_title is None:
-                break # Break loop if the user enters 'exit'
+                # Break loop if the user enters 'exit'
+                break
 
             if new_title:
                 book.title = new_title
@@ -479,7 +494,8 @@ class Menu(InputMixin):
                 "Enter the shelf number or 'Exit' to go back:\n"
             )
             if shelf_number is None:
-                break # Break loop if the user enters 'exit'
+                # Break loop if the user enters 'exit'
+                break
 
             book.shelf_number = shelf_number
             # Edit the book in the worksheet
