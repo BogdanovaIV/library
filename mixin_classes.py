@@ -52,12 +52,14 @@ class InputMixin:
                     value = None # Set value to None to exit input loop
                 else:
                     value = int(value) # Convert the input to integer
-
+                    
+                if value <= 0:
+                    raise ValueError("Value cannot be negative")
             except ValueError as e:
                 print(
                     Fore.RED +
-                    f"Invalid data: it can be an integer without spaces, "
-                    f"please try again.\n"
+                    f"Invalid data: it can be a positive whole number without "
+                    f"spaces, please try again.\n"
                 )
             else:
                 break # Break out of input loop if the input is valid
