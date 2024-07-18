@@ -67,12 +67,14 @@ class InputMixin:
         return value
 
     @staticmethod
-    def input_str(text_message, empty_str_avaliable=False):
+    def input_str(text_message, empty_str_avaliable=False, exit_str_avaliable=False):
         """
         Input the value which is a string.
 
         Args:
             text_message (str): The message is sent to the user.
+            empty_str_avaliable (boolean): Allow to return an empty string.
+            exit_str_avaliable (boolean): Allow to return a string equal "exit".        
 
         Returns:
             string or None: The value inputted by the user.
@@ -81,12 +83,11 @@ class InputMixin:
         while True:
             try:
                 value = input(text_message) # Prompt the user for input
-
                 if not empty_str_avaliable and not value:
                     # Raise error if empty string not allowed and
                     # the input is empty
                     raise ValueError("Value cannot be empty")
-                elif value.lower() == "exit":
+                elif not exit_str_avaliable and value.lower() == "exit":
                     value = None # Set value to None to exit input loop
 
             except ValueError as e:

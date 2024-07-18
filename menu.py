@@ -306,7 +306,8 @@ class Menu(InputMixin):
         """Gets books by a part of the title."""
         # Input the title
         title = self.input_str(
-            "Enter the title:\n"
+            "Enter the title:\n",
+            exit_str_avaliable=True
         )
         # Check if the title is empty
         if not title:
