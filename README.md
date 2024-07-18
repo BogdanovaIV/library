@@ -203,6 +203,7 @@ Before running the application locally, ensure you have the following installed:
 - Delete items from the database.
 - Save information about people who take the book.
 - Add more detailed information about books like descriptions, reviews, etc.
+- Add the feature to display detailed information about books on terminal sized 80 characters
 
 ## Credits 
 
