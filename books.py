@@ -189,8 +189,10 @@ class Books(UniqueIDMixin, GoogleSheet):
             print_lambda,
         )
         if values_row is None:
+            # If no book is found, set the book to None
             book = values_row
         else:
+            # If a book is found, create a Book object with the retrieved data
             book = Book(
                 values_row.get(self.attributes_name["id"]),
                 values_row.get(self.attributes_name["title"]),
@@ -199,6 +201,7 @@ class Books(UniqueIDMixin, GoogleSheet):
             )
 
         if book:
+            # If a book was found, print the book's details in green
             print(
                 Fore.GREEN +
                 f"The book is {book.to_fstring(author_full_name)}"

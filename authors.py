@@ -146,8 +146,11 @@ class Authors(UniqueIDMixin, GoogleSheet):
             print_lambda,
         )
         if values_row is None:
+            # If no author is found, set the author to None
             author = values_row
         else:
+            # If an author is found, create an Author object with
+            # the retrieved data
             author = Author(
                 values_row[self.attributes_name["id"]],
                 values_row[self.attributes_name["full_name"]],
@@ -155,6 +158,7 @@ class Authors(UniqueIDMixin, GoogleSheet):
             )
 
         if author:
+            # If an author was found, print the author's details in green
             print(Fore.GREEN + f"The author is {author.to_fstring()}")
 
         return (

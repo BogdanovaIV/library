@@ -162,6 +162,12 @@ class GoogleSheet:
                 value.lower() in record.get(attr).lower()
                 for attr, value in attributes_all.items()
             ):
+            # Check if the record matches any of the attributes
+            # in attributes_any
+            # Check if the record matches all of the attributes
+            # in attributes_all
+            # If both conditions are met, append the record
+            # to matching_records
                 matching_records.append([row, record])
         return matching_records
 
@@ -197,13 +203,16 @@ class GoogleSheet:
 
         cells = self.find_cells_contain_value(attributes_any, attributes_all)
 
+        # If no cells were found, print an error message and return None and -1
         if not cells:
             print(Fore.RED + f"The {text_item} is not found.\n")
             return None, -1
 
         if len(cells) == 1:
+            # If only one cell was found, set the index to 0
             index = 0
         else:
+            # If multiple cells were found, prompt the user to choose one
             index = self.choose_item(cells, text_item, print_item_lambda)
 
         values_row = cells[index][1]
@@ -242,11 +251,13 @@ class GoogleSheet:
             choice = terminal_menu.show()
 
             try:
+                # Check if the chosen option is valid
                 if 0 <= choice < len(cells):
-                    return choice
-
+                    return choice # Return the chosen option's index
+                # Raise an error if the choice is not valid
                 raise ValueError(Fore.RED + "Please enter a valid option.")
             except ValueError as e:
+                # Print the error message and prompt the user to try again
                 print(Fore.RED + f"Invalid data: {e}, please try again.\n")
 
     def check_duplicate_data(self, attributes):
@@ -262,9 +273,10 @@ class GoogleSheet:
         """
         records = self.get_all_records()
         for record in records:
+            # Check if all specified attributes match the values in the record
             if all(
                 record.get(attr) == value for attr,
                 value in attributes.items()
             ):
-                return record
-        return None
+                return record # Return the record if a duplicate is found
+        return None # Return None if no duplicate is found

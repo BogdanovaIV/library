@@ -46,12 +46,12 @@ class InputMixin:
         value = None
         while True:
             try:
-                value = input(text_message)
+                value = input(text_message) # Prompt the user for input
 
-                if value.lower() == "exit":
-                    value = None
+                if value.lower() == "exit": # Check if the user wants to exit
+                    value = None # Set value to None to exit input loop
                 else:
-                    value = int(value)
+                    value = int(value) # Convert the input to integer
 
             except ValueError as e:
                 print(
@@ -60,7 +60,7 @@ class InputMixin:
                     f"please try again.\n"
                 )
             else:
-                break
+                break # Break out of input loop if the input is valid
 
         return value
 
@@ -78,16 +78,19 @@ class InputMixin:
         value = None
         while True:
             try:
-                value = input(text_message)
+                value = input(text_message) # Prompt the user for input
 
                 if not empty_str_avaliable and not value:
+                    # Raise error if empty string not allowed and
+                    # the input is empty
                     raise ValueError("Value cannot be empty")
                 elif value.lower() == "exit":
-                    value = None
+                    value = None # Set value to None to exit input loop
 
             except ValueError as e:
+                # Print error message in red for invalid input
                 print(Fore.RED + f"Invalid data: {e}, please try again.\n")
             else:
-                break
+                break # Break out of input loop if the input is valid
 
         return value
