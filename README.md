@@ -56,14 +56,14 @@ To choose one of the options, the user has to input the number of the option and
 - 3. Edit an author - edit detailed information about the chosen author.
      - The system asks the user to input the full name of the author or the ID of the author, checks that it cannot be empty, finds the author and sends the result's message. The user can input "Exit" to return to the Authors' menu.
      ![The Message of Found Author](documentation/features/find-author-by-id-or-full-name.png)
-     - The selection occurs based on the occurrence of a string. If it finds several items, the system asks the user to choose one of them.
+     - The selection occurs based on the occurrence of a string. If it finds several items, the system asks the user to choose one.
      ![Choose the author](documentation/features/choose-author.png)
      - Then the system asks the user to input the new full name of the author. The user can input an empty string not to change the full name or "Exit" to return to the Authors' menu.
      - Then the system asks the user to input the new birth year of the author and checks that it cannot be empty and has to be an integer. The user can input "Exit" to return to the Authors' menu.
      - Finally, the system saves information and sends the message with details.
      ![The saved message](documentation/features/update-author.png)
 - 4. Find books by an author - displays books with the selection by the author.
-     - The system asks the user to input the full name of the author or the ID of the author, checks that it cannot be empty, finds the author and sends the result's message. The user can input "Exit" to return to the Authors' menu. The selection occurs based on the occurrence of a string. If it finds several items, the system asks the user to choose one of them.
+     - The system asks the user to input the full name of the author or the ID of the author, checks that it cannot be empty, finds the author and sends the result's message. The user can input "Exit" to return to the Authors' menu. The selection occurs based on the occurrence of a string. If it finds several items, the system asks the user to choose one.
      - Then the system displays books in the format "ID (book) - the title - the full name of the author - shelf(the number of the shelf on which the book is stored)".
      ![The list of books](documentation/features/list-books-selected-by-author.png)
 - 5. Back to the previous step - return to the Main menu.
@@ -77,7 +77,7 @@ To choose one of the options, the user has to input the number of the option and
      ![Get all books](documentation/features/get-all-books.png)
 - 2. Add a new book - add a new book to the database.
      ![Add a new book](documentation/features/add-new-book.png)
-     - The system asks the user to input the full name of the author or the ID of the author, checks that it cannot be empty, finds the author and sends the result's message. The user can input "Exit" to return to the Books' menu. The selection occurs based on the occurrence of a string. If it finds several items, the system asks the user to choose one of them.
+     - The system asks the user to input the full name of the author or the ID of the author, checks that it cannot be empty, finds the author and sends the result's message. The user can input "Exit" to return to the Books' menu. The selection occurs based on the occurrence of a string. If it finds several items, the system asks the user to choose one.
      - Then The system asks the user to input the title and checks that it cannot 
      be empty. The user can input "Exit" to return to the Books' menu.
      - Then The system asks the user to input the the number of the shelf on which the book is stored and checks that it cannot be empty. The user can input "Exit" to return to the Books' menu.
@@ -86,7 +86,7 @@ To choose one of the options, the user has to input the number of the option and
      - Finally, the system saves information and sends the message with details.
      ![The saved message](documentation/features/save-book.png)
 - 3. Edit a book - edit detailed information about the chosen book.
-     - The system asks the user to input the full name of the author or the ID of the author, checks that it cannot be empty, finds the author and sends the result's message. The user can input "Exit" to return to the Books' menu. The selection occurs based on the occurrence of a string. If it finds several items, the system asks the user to choose one of them.
+     - The system asks the user to input the full name of the author or the ID of the author, checks that it cannot be empty, finds the author and sends the result's message. The user can input "Exit" to return to the Books' menu. The selection occurs based on the occurrence of a string. If it finds several items, the system asks the user to choose one.
      - Then the system asks the user to input the title of the book or ID of the book and checks that it cannot be empty. The user can input "Exit" to return to the Books' menu.
      - Then the system finds the book and sends the result's message.
      ![The found message](documentation/features/find-book-by-id-or-full-name.png) 
@@ -210,7 +210,7 @@ Before running the application locally, ensure you have the following installed:
 ### Content 
 
 - Information about authors and books was taken from free sources like Wikipedia
-- ![Love Sandwiches](https://github.com/Code-Institute-Solutions/love-sandwiches-p5-sourcecode/tree/master/05-deployment/01-deployment-part-1) is a tutorial project that covers the general principles of writing code and deploying it.
+- [Love Sandwiches](https://github.com/Code-Institute-Solutions/love-sandwiches-p5-sourcecode/tree/master/05-deployment/01-deployment-part-1) is a tutorial project that covers the general principles of writing code and deploying it.
 
 ### Acknowledgments
 
