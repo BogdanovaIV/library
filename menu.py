@@ -1,10 +1,10 @@
-from authors import Author, Authors
-from books import Book, Books
-from mixin_classes import UniqueIDMixin, InputMixin
+import os
 from colorama import Fore
 from tabulate import tabulate
 from simple_term_menu import TerminalMenu
-import os
+from authors import Author, Authors
+from books import Book, Books
+from mixin_classes import UniqueIDMixin, InputMixin
 
 
 class Menu(InputMixin):

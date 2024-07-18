@@ -1,9 +1,9 @@
-from googlesheets import GoogleSheetsClient
+import os
+from colorama import Fore
+from googlesheets_setup import GoogleSheetsClient
 from authors import Authors
 from books import Books
 from menu import Menu
-from colorama import Fore
-import os
 
 
 CREDS = GoogleSheetsClient.get_creds("creds.json")

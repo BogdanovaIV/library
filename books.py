@@ -1,6 +1,6 @@
-from googlesheets import GoogleSheetsClient, GoogleSheet
-from mixin_classes import UniqueIDMixin, InputMixin
 from colorama import Fore
+from googlesheets_setup import GoogleSheetsClient, GoogleSheet
+from mixin_classes import UniqueIDMixin, InputMixin
 
 
 class Book:
