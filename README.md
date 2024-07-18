@@ -209,6 +209,7 @@ Before running the application locally, ensure you have the following installed:
 ### Content 
 
 - Information about authors and books was taken from free sources like Wikipedia
+- ![Love Sandwiches](https://github.com/Code-Institute-Solutions/love-sandwiches-p5-sourcecode/tree/master/05-deployment/01-deployment-part-1) is a tutorial project that covers the general principles of writing code and deploying it.
 
 ### Acknowledgments
 
@@ -216,3 +217,9 @@ Before running the application locally, ensure you have the following installed:
 - [Code Institute team](https://codeinstitute.net/) supported me and provided all the information that I needed.
 - [Github](https://github.com/) provided free access to a versioning system.
 - [Heroku](heroku.com) provided a service to deploy an application.
+- [gspread](https://docs.gspread.org/en/v6.0.0/) is a free Python library that provides easy access to Google Sheets API. It allows for seamless reading, writing, and updating of Google Sheets.
+- [google-auth](https://google-auth.readthedocs.io/en/master/) is a free library to authenticate and authorize Google APIs. Specifically, google.oauth2.service_account is used to handle service account credentials for secure access to Google Sheets.
+- [uuid](https://docs.python.org/3/library/uuid.html) is a free Python library used to generate unique identifiers for records, ensuring that each entry in the Google Sheets has a unique ID.
+- [colorama](https://pypi.org/project/colorama/) is a free library for colored terminal text, enhancing the user interface for command-line interactions.
+- [simple_term_menu](https://pypi.org/project/simple-term-menu/) is a free library for creating simple and interactive terminal menus, improving the command-line user experience.
+- [tabulate](https://pypi.org/project/tabulate/) is a free Python library used to format tabular data in plain text, providing an easy way to display data in a structured format.
